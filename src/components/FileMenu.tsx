@@ -25,7 +25,7 @@ import { Toast, type ToastKind, type ToastMessage } from "@/components/Toast";
 // into the export ZIP. The TTF/OTF generator itself (`generateFontFiles`,
 // `exportOTF`, `trueTypeWriter`) is never touched.
 
-const LICENSE_TYPE_OPTIONS = ["Personal", "Commercial"] as const;
+const LICENSE_TYPE_OPTIONS = ["Personal", "Commercial", "Corporate", "Extended"] as const;
 type LicenseType = (typeof LICENSE_TYPE_OPTIONS)[number] | "";
 
 type ExportTab = "fontinfo" | "license";
