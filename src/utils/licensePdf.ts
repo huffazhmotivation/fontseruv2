@@ -40,10 +40,17 @@ function licenseParagraphs(info: LicensePdfInfo): string[] {
 
   const intro = `${attribution} It was built with FontSeru, a browser-based type design studio, and is made available under a ${info.licenseType || "custom"} License as set out by the designer below. This document is a plain-language summary of that license; the terms here reflect what the designer has authorized for this font.`;
 
-  const isCommercial = info.licenseType.toLowerCase() === "commercial";
-  const scope = isCommercial
-    ? `Under this Commercial License, ${info.fontName} may be used in revenue-generating and commercial work, including branding, packaging, advertising, publications, apps, and merchandise, subject to any additional terms noted below. The font may be embedded in finished documents and digital products for distribution to end users. Reselling, sublicensing, or redistributing the font files themselves — modified or unmodified — as a standalone product is not permitted without the designer's prior written consent.`
-    : `Under this Personal License, ${info.fontName} may be used for non-commercial purposes such as personal projects, hobby work, and school assignments — that is, uses that do not generate revenue or serve a commercial or promotional purpose. For commercial use, please contact the designer to obtain a Commercial License. Reselling, sublicensing, or redistributing the font files themselves, modified or unmodified, is not permitted without the designer's prior written consent.`;
+  const licenseKey = info.licenseType.trim().toLowerCase();
+
+  const scopeByType: Record<string, string> = {
+    personal: `Under this Personal License, ${info.fontName} may be used for non-commercial purposes such as personal projects, hobby work, school assignments, and other uses that do not generate revenue or serve a commercial or promotional purpose. For commercial use, please contact the designer to obtain a Commercial, Corporate, or Extended License. Reselling, sublicensing, or redistributing the font files themselves, modified or unmodified, is not permitted without the designer's prior written consent.`,
+    commercial: `Under this Commercial License, ${info.fontName} may be used by a single individual, freelancer, or small business in revenue-generating work, including branding, packaging, advertising, publications, apps, and merchandise, subject to any additional terms noted below. The font may be embedded in finished documents and digital products for distribution to end users. Reselling, sublicensing, or redistributing the font files themselves — modified or unmodified — as a standalone product is not permitted without the designer's prior written consent.`,
+    corporate: `Under this Corporate License, ${info.fontName} may be used across an entire organization — multiple employees, departments, offices, and internal systems within the licensed company or its subsidiaries — for branding, marketing, product design, and other commercial work, subject to any additional terms noted below. This tier covers organization-wide internal use but does not grant the right to resell, sublicense, or redistribute the font files themselves as a standalone product without the designer's prior written consent.`,
+    extended: `Under this Extended License, ${info.fontName} may be used in commercial work with broader distribution rights than a standard Commercial License, including embedding the font in templates, themes, software user interfaces, or products intended for resale or mass distribution to third parties, subject to any additional terms noted below. This tier still does not permit reselling, sublicensing, or redistributing the raw font files themselves as a standalone product without the designer's prior written consent.`,
+  };
+
+  const scope = scopeByType[licenseKey]
+    ?? `${info.fontName} is licensed under the "${info.licenseType || "custom"}" terms set by the designer, as detailed below. Any use outside the scope described here should be confirmed directly with the designer before proceeding.`;
 
   const extraClauses = [info.permission.trim(), info.restriction.trim(), info.note.trim()]
     .filter(Boolean)
