@@ -82,7 +82,7 @@ body { font-family: var(--sans); -webkit-font-smoothing: antialiased; text-rende
 button, input { font-family: inherit; }
 ::selection { background: var(--accent); color: var(--accent-ink); }
 
-/* Scrollbars — minimal, theme-colored, and consistent everywhere. This
+/* Scrollbars â€” minimal, theme-colored, and consistent everywhere. This
    global rule is the baseline for any scrollable panel in the app;
    individual panels below may still tune their own thumb color/width, but
    every scrollbar shares the same slim, theme-aware look rather than the
@@ -167,7 +167,7 @@ button, input { font-family: inherit; }
 .fm-topbtn:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
 .fm-topbtn:disabled { opacity: 0.3; cursor: not-allowed; }
 /* PRO-locked top-bar actions (e.g. Family for FREE accounts) stay visible
-   and clickable — clicking opens the "Join PRO" modal — just dimmed, with a
+   and clickable â€” clicking opens the "Join PRO" modal â€” just dimmed, with a
    small inline lock icon appended in the button markup. */
 .fm-topbtn-locked { opacity: 0.45; }
 .fm-topbtn-locked:hover { opacity: 0.7; }
@@ -259,7 +259,7 @@ button, input { font-family: inherit; }
 .fm-auth-submit-btn:hover:not(:disabled) { opacity: 0.9; }
 .fm-auth-submit-btn:disabled { opacity: 0.6; cursor: not-allowed; }
 
-/* Email/other inputs inside auth dialogs — same visual language as the
+/* Email/other inputs inside auth dialogs â€” same visual language as the
    rest of the app's form fields (export dialog etc.), never a bare/native
    grey or white input. */
 .fm-auth-dialog input {
@@ -402,8 +402,8 @@ button, input { font-family: inherit; }
 .fm-tool-muted { color: var(--text-faint); opacity: 0.55; }
 
 /* PRO-locked tools (e.g. Brush, Trace Image for FREE accounts) stay visible
-   and clickable — clicking opens the "Join PRO" modal instead of running
-   the tool's normal action — just dimmed with a small lock badge. */
+   and clickable â€” clicking opens the "Join PRO" modal instead of running
+   the tool's normal action â€” just dimmed with a small lock badge. */
 .fm-tool-locked { position: relative; opacity: 0.4; }
 .fm-tool-locked:hover { opacity: 0.65; background: var(--panel-2); }
 .fm-tool-lock-badge {
@@ -449,7 +449,7 @@ button, input { font-family: inherit; }
 }
 
 /* ------------------------------------------------------------------ SKETCH MODE */
-/* Additive on top of the existing canvas chrome — nothing here overrides or
+/* Additive on top of the existing canvas chrome â€” nothing here overrides or
    removes .fm-floating-toolbar; it just adds a toggle + a second toolbar and,
    while active, gives the canvas more room by tucking the side panels away. */
 .fm-sketch-toggle {
@@ -490,7 +490,7 @@ button, input { font-family: inherit; }
 
 /* New, separate toolbar for Sketch Mode: Undo / Redo / Copy / Paste, left
    edge of the canvas. Visually matches .fm-floating-toolbar's language but
-   is its own element — the original bottom toolbar is never touched. */
+   is its own element â€” the original bottom toolbar is never touched. */
 .fm-sketch-toolbar {
   position: absolute;
   top: 50%;
@@ -517,7 +517,7 @@ button, input { font-family: inherit; }
 .fm-tool-danger:hover:not(:disabled) { color: var(--danger); background: color-mix(in srgb, var(--danger) 14%, transparent); }
 /* Drag handle: grabbing this (not the buttons) repositions the toolbar
    freely within the canvas. Orientation flips automatically based on
-   which edge of the canvas it ends up closest to — see SketchToolbar.tsx. */
+   which edge of the canvas it ends up closest to â€” see SketchToolbar.tsx. */
 .fm-sketch-toolbar-grip {
   width: 100%; height: 14px;
   display: flex; align-items: center; justify-content: center;
@@ -539,7 +539,7 @@ button, input { font-family: inherit; }
 }
 
 /* Cleaner, wider canvas while sketching: fold the glyph list out of the
-   way. Nothing is unmounted — this is pure CSS, so leaving Sketch Mode
+   way. Nothing is unmounted â€” this is pure CSS, so leaving Sketch Mode
    restores the normal layout instantly with all panel state intact. */
 .fm-root[data-sketch-mode="true"] .fm-glyphnav {
   width: 0;
@@ -653,8 +653,8 @@ button, input { font-family: inherit; }
 
 /* Glyph Prev/Next side arrows: Normal Mode only (Sketch Mode keeps its own
    GlyphStepper). Minimalist outlined circular buttons that float over the
-   canvas (translucent panel background + soft shadow) — filled green only
-   while pressed/active, with a scale-up hover effect — docked a bit in
+   canvas (translucent panel background + soft shadow) â€” filled green only
+   while pressed/active, with a scale-up hover effect â€” docked a bit in
    from the left/right edges, vertically centered on the canvas. */
 .fm-glyph-sidenav-btn {
   position: absolute;
@@ -699,10 +699,10 @@ button, input { font-family: inherit; }
    hover colors/background (those are separate properties, set by more
    specific selectors, and keep working exactly as before). Excluded:
    buttons that already manage their own hover transform, so this doesn't
-   clobber their existing motion — .fm-tile and .fm-brush-card (lift on
+   clobber their existing motion â€” .fm-tile and .fm-brush-card (lift on
    hover), .fm-glyph-sidenav-btn (handles its own scale + centering
    transform together, above), and any button centered with
-   `transform: translateY(-50%)` — .fm-auth-password-toggle (the
+   `transform: translateY(-50%)` â€” .fm-auth-password-toggle (the
    show/hide-password eye button) and .fm-sketch-panel-toggle (the
    Sketch Mode right-panel drawer arrow). For those, a bare `scale(1.04)`
    here would replace their centering transform outright and the button
@@ -892,7 +892,7 @@ button:hover:not(:disabled):not(.fm-tile):not(.fm-brush-card):not(.fm-glyph-side
   box-shadow: inset 0 1px 0 color-mix(in srgb, var(--text) 5%, transparent);
 }
 
-/* Minimalist text-tab control — no border/background box, just weight + color + underline for the active option. */
+/* Minimalist text-tab control â€” no border/background box, just weight + color + underline for the active option. */
 .fm-tab-select { display: flex; gap: 16px; }
 .fm-tab-select button {
   background: none;
@@ -1055,7 +1055,7 @@ input[type="number"]::-webkit-outer-spin-button {
 .fm-checkbox-row { display: flex; align-items: center; gap: 9px; font-size: 12px; color: var(--text); cursor: pointer; }
 /* Minimalist outline checkbox, matching .fm-export-checkmark elsewhere in
    the app: transparent fill at all times (checked or not), just a border
-   and a small checkmark glyph — no solid accent-color fill box. */
+   and a small checkmark glyph â€” no solid accent-color fill box. */
 .fm-checkbox-row input[type="checkbox"] {
   appearance: none;
   -webkit-appearance: none;
@@ -1129,7 +1129,7 @@ input[type="number"]::-webkit-outer-spin-button {
 .fm-action-btn.accent:hover { background: var(--accent-2); }
 .fm-action-btn.danger { color: var(--danger); }
 .fm-action-btn.danger:hover { border-color: var(--danger); background: color-mix(in srgb, var(--danger) 12%, transparent); }
-/* PRO-locked action (e.g. "Generate From Regular" for FREE accounts) —
+/* PRO-locked action (e.g. "Generate From Regular" for FREE accounts) â€”
    stays visible/clickable, opens the "Join PRO" modal instead of running. */
 .fm-action-btn-locked { opacity: 0.5; }
 .fm-action-btn-locked:hover { opacity: 0.75; }
@@ -1157,7 +1157,7 @@ input[type="number"]::-webkit-outer-spin-button {
   .fm-glyphnav { width: 200px; }
   .fm-rightpanel { width: 250px; }
 
-  /* Tablet landscape (1024–1180): compact the top bar so File / Undo / Redo /
+  /* Tablet landscape (1024â€“1180): compact the top bar so File / Undo / Redo /
      Family / Test Lab / Export keep their click targets and tooltips but no
      longer force horizontal overflow. Icons + tooltips remain fully usable;
      only the visible text label is collapsed via font-size, nothing is removed. */
@@ -1176,7 +1176,7 @@ input[type="number"]::-webkit-outer-spin-button {
 
   .fm-zoom-controls input[type="range"] { width: 90px; }
 
-  /* Bottom bar: same icon-first treatment as the top bar — labels collapse,
+  /* Bottom bar: same icon-first treatment as the top bar â€” labels collapse,
      tooltips/titles and click targets stay intact. */
   .fm-bottombar { gap: 8px; padding: 0 10px; }
   .fm-bottombar button {
@@ -1194,7 +1194,7 @@ input[type="number"]::-webkit-outer-spin-button {
 }
 
 /* ------------------------------------------------------------ TABLET PORTRAIT
-   768–900px wide (e.g. 768×1024, 820×1180). Sidebars shrink further so the
+   768â€“900px wide (e.g. 768Ã—1024, 820Ã—1180). Sidebars shrink further so the
    canvas + floating toolbar keep real working room; the glyph grid drops to
    3 columns so tiles stay a comfortable touch size instead of shrinking with
    a 4th column. Nothing here changes desktop (>1180px) styles above. */
@@ -1206,7 +1206,7 @@ input[type="number"]::-webkit-outer-spin-button {
   .fm-canvas-area { padding: clamp(8px, 2vw, 20px); }
 
   /* Safety net: if the compacted controls still don't all fit at the
-     narrowest widths, the bar scrolls horizontally within its own 40–44px
+     narrowest widths, the bar scrolls horizontally within its own 40â€“44px
      strip instead of the page gaining a horizontal scrollbar or any control
      being clipped/hidden. */
   .fm-bottombar {
@@ -1221,7 +1221,7 @@ input[type="number"]::-webkit-outer-spin-button {
 }
 
 /* ================================================================
-   Font Test Lab / Kerning Editor overlay (Phase 6) — additive only,
+   Font Test Lab / Kerning Editor overlay (Phase 6) â€” additive only,
    does not modify any existing selector above.
    ================================================================ */
 
@@ -1342,7 +1342,7 @@ input[type="number"]::-webkit-outer-spin-button {
   background: transparent;
   color: transparent;
   /* The browser's own caret uses its own font metrics, which is exactly the
-     approximation we're replacing — hide it and draw `.fm-lab-caret` (real
+     approximation we're replacing â€” hide it and draw `.fm-lab-caret` (real
      glyph-metric caret, see useTypingCaret) in its place instead. */
   caret-color: transparent;
   font-family: var(--sans);
@@ -1352,7 +1352,7 @@ input[type="number"]::-webkit-outer-spin-button {
 }
 .fm-lab-stage-input::selection { background: transparent; color: transparent; }
 
-/* Real glyph-metric caret — positioned from FontSeru's own layout engine
+/* Real glyph-metric caret â€” positioned from FontSeru's own layout engine
    (advance width, LSB/RSB, kerning), not the textarea's font metrics. */
 .fm-lab-caret {
   position: absolute;
@@ -1908,7 +1908,7 @@ input[type="number"]::-webkit-outer-spin-button {
 }
 
 
-/* Production file/project actions — intentionally scoped to the existing top chrome. */
+/* Production file/project actions â€” intentionally scoped to the existing top chrome. */
 .fm-filemenu-wrap { position: relative; }
 .fm-filemenu-wrap > .fm-topbtn { gap: 5px; }
 .fm-filemenu {
@@ -2183,7 +2183,7 @@ input[type="number"]::-webkit-outer-spin-button {
 
 
 /* ================================================================
-   Kerning Family — additive Test Lab extension.
+   Kerning Family â€” additive Test Lab extension.
    Single Test selectors/components above remain untouched.
    ================================================================ */
 
@@ -2361,7 +2361,11 @@ input[type="number"]::-webkit-outer-spin-button {
   position: relative;
   min-width: 0;
   min-height: 153px;
-  padding: 28px 30px 26px 8px;
+  /* Extra top padding (was 28px) gives headroom for multilingual glyphs
+     whose diacritics/marks rise above the font's ascender metric â€” with
+     only 28px there wasn't enough room and tall accents got clipped by
+     the overflow rule below. */
+  padding: 44px 30px 26px 8px;
   overflow: hidden;
   cursor: default;
 }
@@ -2379,7 +2383,13 @@ input[type="number"]::-webkit-outer-spin-button {
   width: 100%;
   min-width: 0;
   display: flex;
-  overflow: hidden;
+  /* Horizontal overflow (long lines) is still contained by the row's own
+     width via .fm-family-line-inner's max-width below; overflow was
+     previously "hidden" here too, which also clipped vertically and cut
+     off tall multilingual diacritics/marks that rise above the font's
+     ascender. Visible lets those render fully; .fm-family-style-body's
+     own overflow + padding above still contains normal-height text. */
+  overflow: visible;
 }
 .fm-family-line-inner {
   position: relative;
@@ -2439,7 +2449,7 @@ input[type="number"]::-webkit-outer-spin-button {
 
 
 /* ================================================================
-   Family Auto Generate — reuses Test Lab window and existing controls.
+   Family Auto Generate â€” reuses Test Lab window and existing controls.
    ================================================================ */
 .fm-family-auto-modal {
   width: min(1220px, 100%);
@@ -2748,11 +2758,11 @@ input[type="number"]::-webkit-outer-spin-button {
 }
 
 /* ================================================================
-   Trace Image overlay — additive only, reuses .fm-lab-* / .fm-field /
+   Trace Image overlay â€” additive only, reuses .fm-lab-* / .fm-field /
    .fm-action-btn / .fm-grid / .fm-tile tokens above without modifying
    any of them.
 
-   Layout: the modal splits 75/25 — .fm-trace-left (tracing workspace:
+   Layout: the modal splits 75/25 â€” .fm-trace-left (tracing workspace:
    settings + per-letter results) / .fm-trace-right (compact glyph target
    preview list). .fm-trace-left itself further splits into a fixed
    settings rail (.fm-trace-controls) and a flexible results canvas
@@ -2844,8 +2854,8 @@ input[type="number"]::-webkit-outer-spin-button {
 /* Unified trace canvas: one blank "sheet" (.fm-trace-artboard) sized to the
    traced image's own aspect ratio. Every detected shape is positioned on it
    with absolute percentages derived straight from its pixel bounds, so the
-   whole traced result reads as one composition — not separate per-letter
-   cards — while each shape (.fm-trace-artboard-item) stays an independently
+   whole traced result reads as one composition â€” not separate per-letter
+   cards â€” while each shape (.fm-trace-artboard-item) stays an independently
    clickable/draggable button. */
 .fm-trace-artboard-wrap {
   flex: 1;
@@ -2861,7 +2871,7 @@ input[type="number"]::-webkit-outer-spin-button {
   border-radius: 10px;
   box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--line) 60%, transparent);
 }
-/* Each detected shape is a plain, borderless hit target — selection reads
+/* Each detected shape is a plain, borderless hit target â€” selection reads
    entirely through the shape's own fill color (see .fm-trace-artboard-svg
    path below), never through a background box or outline, so overlapping
    bounding boxes (common for touching/kerned letters) never stack into
@@ -3013,7 +3023,7 @@ input[type="number"]::-webkit-outer-spin-button {
 }
 
 /* Import SVG: sits above the Import Image dropzone, minimalist dark/outline
-   by default, switching to the app's accent green on hover/active — visually
+   by default, switching to the app's accent green on hover/active â€” visually
    distinct from the dashed image dropzone since it skips tracing entirely. */
 .fm-trace-import-svg-btn {
   width: 100%;
