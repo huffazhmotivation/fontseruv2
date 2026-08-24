@@ -1,0 +1,3240 @@
+:root {
+  --sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+
+* { box-sizing: border-box; }
+html, body, #root { height: 100%; margin: 0; }
+body { font-family: var(--sans); -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+
+/* ------------------------------------------------------------------ TOKENS */
+.fm-root[data-theme="dark"] {
+  --bg: #0a0c0b;
+  --panel: #101312;
+  --panel-2: #171b19;
+  --panel-3: #1e2320;
+  --border: #23282500;
+  --line: #262b28;
+  --line-soft: #1c211e;
+  --text: #eef2ef;
+  --text-dim: #8a938d;
+  --text-faint: #5c635e;
+  --ink: #f2f5f2;
+  --accent: #c6f24e;
+  --accent-2: #a6e034;
+  --accent-ink: #0c0f08;
+  --accent-soft: #1f2a10;
+  --node-corner: #9aa39c;
+  --node-smooth: #6fd3ff;
+  --node-symmetric: #c69bff;
+  --guide: #454f47;
+  --guide-2: #6b5a2e;
+  --grid: #1e2420;
+  --grid-major: #333b35;
+  --handle-line: #4a534d;
+  --canvas: #0c0f0d;
+  --thumb-ink: #d6ddd7;
+  --danger: #ff6b57;
+  --shadow: rgba(0, 0, 0, 0.5);
+}
+
+.fm-root[data-theme="light"] {
+  --bg: #f7f8f9;
+  --panel: #ffffff;
+  --panel-2: #f3f4f6;
+  --panel-3: #ebedf0;
+  --border: #00000000;
+  --line: #e3e6e9;
+  --line-soft: #eef0f2;
+  --text: #14181c;
+  --text-dim: #62686f;
+  --text-faint: #9aa1a8;
+  --ink: #171b1f;
+  --accent: #4a5a68;
+  --accent-2: #384754;
+  --accent-ink: #ffffff;
+  --accent-soft: #eaedf0;
+  --node-corner: #6d747b;
+  --node-smooth: #1f8fce;
+  --node-symmetric: #7b45d6;
+  --guide: #aab0b6;
+  --guide-2: #b79a4e;
+  --grid: #dee2e5;
+  --grid-major: #c6cbcf;
+  --handle-line: #a9aeb4;
+  --canvas: #fbfcfc;
+  --thumb-ink: #1b1f23;
+  --danger: #d1402d;
+  --shadow: rgba(20, 22, 24, 0.08);
+}
+
+.fm-root {
+  height: 100vh;
+  height: 100dvh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  color: var(--text);
+  overflow: hidden;
+}
+
+button, input { font-family: inherit; }
+::selection { background: var(--accent); color: var(--accent-ink); }
+
+/* Scrollbars â€” minimal, theme-colored, and consistent everywhere. This
+   global rule is the baseline for any scrollable panel in the app;
+   individual panels below may still tune their own thumb color/width, but
+   every scrollbar shares the same slim, theme-aware look rather than the
+   browser default. */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--text-faint) 55%, transparent) transparent;
+}
+*::-webkit-scrollbar { width: 8px; height: 8px; }
+*::-webkit-scrollbar-track { background: transparent; }
+*::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--text-faint) 55%, transparent);
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+*::-webkit-scrollbar-thumb:hover { background: var(--text-faint); }
+*::-webkit-scrollbar-corner { background: transparent; }
+
+.fm-glyphlist::-webkit-scrollbar, .fm-rightpanel::-webkit-scrollbar { width: 9px; }
+.fm-glyphlist::-webkit-scrollbar-thumb, .fm-rightpanel::-webkit-scrollbar-thumb {
+  background: var(--line); border-radius: 8px; border: 2px solid var(--panel);
+}
+.fm-glyphlist::-webkit-scrollbar-thumb:hover, .fm-rightpanel::-webkit-scrollbar-thumb:hover { background: var(--text-faint); }
+
+/* ------------------------------------------------------------------ TOP BAR */
+.fm-topbar {
+  height: 54px;
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 14px;
+  background: var(--panel);
+  border-bottom: 1px solid var(--line);
+  min-width: 0;
+}
+.fm-topbar .fm-topbtn { white-space: nowrap; }
+.fm-logo { display: flex; align-items: center; gap: 10px; }
+.fm-logo-image {
+  display: block;
+  width: auto;
+  height: 29px;
+  max-width: clamp(64px, 9vw, 112px);
+  object-fit: contain;
+  flex: 0 0 auto;
+}
+.fm-logo .mark {
+  width: 28px; height: 28px; border-radius: 8px;
+  background: var(--accent);
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 0 0 1px var(--accent-2), 0 4px 14px -4px var(--accent);
+}
+.fm-logo .mark-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--accent-ink); }
+.fm-logo-name { font-size: 16px; font-weight: 800; letter-spacing: -0.02em; color: var(--text); }
+.fm-logo-accent { color: var(--accent); }
+.fm-divider { width: 1px; height: 26px; background: var(--line); }
+.fm-fontname {
+  font-family: var(--mono);
+  font-size: 12.5px;
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 7px 10px;
+  color: var(--text);
+  width: clamp(110px, 18vw, 200px);
+  min-width: 0;
+  outline: none;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+.fm-fontname:hover { border-color: var(--text-faint); }
+.fm-fontname:focus { border-color: var(--accent); }
+.fm-topbtn-group { display: flex; gap: 2px; }
+.fm-topbtn {
+  display: flex; align-items: center; gap: 6px;
+  border: none; background: transparent; color: var(--text-dim);
+  padding: 7px 11px; border-radius: 8px; cursor: pointer;
+  font-size: 12.5px; font-weight: 600;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.fm-topbtn:hover:not(:disabled) { background: var(--panel-2); color: var(--text); }
+.fm-topbtn:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.fm-topbtn:disabled { opacity: 0.3; cursor: not-allowed; }
+/* PRO-locked top-bar actions (e.g. Family for FREE accounts) stay visible
+   and clickable â€” clicking opens the "Join PRO" modal â€” just dimmed, with a
+   small inline lock icon appended in the button markup. */
+.fm-topbtn-locked { opacity: 0.45; }
+.fm-topbtn-locked:hover { opacity: 0.7; }
+.fm-lock-badge-inline { margin-left: 2px; vertical-align: -1px; color: var(--accent); }
+.fm-spacer { flex: 1; }
+.fm-theme-toggle {
+  width: 34px; height: 34px; border-radius: 9px;
+  border: 1px solid var(--line); background: var(--panel-2); color: var(--text);
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+.fm-theme-toggle:hover { border-color: var(--accent); color: var(--accent); }
+
+/* ------------------------------------------------------------------ AUTH */
+.fm-auth-placeholder { width: 34px; height: 34px; flex: 0 0 auto; }
+
+.fm-auth-user { position: relative; flex: 0 0 auto; }
+.fm-auth-avatar-btn {
+  display: flex; align-items: center; gap: 8px;
+  border: 1px solid var(--line); background: var(--panel-2); color: var(--text);
+  border-radius: 20px; padding: 4px 10px 4px 4px; cursor: pointer;
+  transition: border-color 0.15s ease;
+}
+.fm-auth-avatar-btn:hover { border-color: var(--accent); }
+.fm-auth-avatar {
+  width: 26px; height: 26px; border-radius: 50%;
+  display: grid; place-items: center;
+  background: var(--accent); color: var(--accent-ink);
+  font-size: 10.5px; font-weight: 700; letter-spacing: -0.02em;
+  flex: 0 0 auto;
+}
+.fm-auth-plan-badge {
+  display: inline-flex; align-items: center; gap: 3px;
+  font-size: 10.5px; font-weight: 650; letter-spacing: 0.03em;
+  color: var(--text-dim); text-transform: uppercase;
+}
+.fm-auth-plan-pro { color: var(--accent); }
+
+.fm-auth-menu {
+  position: absolute; top: calc(100% + 8px); right: 0; z-index: 190;
+  width: 220px; padding: 10px;
+  border: 1px solid var(--line); border-radius: 12px;
+  background: var(--panel); box-shadow: 0 16px 44px rgba(0,0,0,.36);
+  display: grid; gap: 8px;
+}
+.fm-auth-menu-email {
+  font-size: 12px; font-weight: 600; color: var(--text);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.fm-auth-menu-plan { font-size: 11.5px; color: var(--text-dim); }
+.fm-auth-menu-plan strong { color: var(--text); }
+.fm-auth-menu-item {
+  display: flex; align-items: center; gap: 7px;
+  border: 1px solid var(--line); background: var(--panel-2); color: var(--text);
+  border-radius: 8px; padding: 7px 9px; font-size: 12px; font-weight: 600;
+  cursor: pointer; transition: border-color 0.15s ease, color 0.15s ease;
+}
+.fm-auth-menu-item:hover { border-color: var(--danger); color: var(--danger); }
+
+.fm-auth-backdrop {
+  position: fixed; inset: 0; z-index: 200; display: grid; place-items: center;
+  padding: 28px; background: rgba(3,5,8,.72); backdrop-filter: blur(8px);
+}
+.fm-auth-dialog {
+  width: min(400px, calc(100vw - 40px));
+  border: 1px solid var(--line); border-radius: 16px;
+  background: var(--panel); box-shadow: 0 28px 90px rgba(0,0,0,.46);
+}
+.fm-auth-dialog > header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 18px 20px 14px; border-bottom: 1px solid var(--line);
+}
+.fm-auth-dialog h2 { margin: 0; font-size: 17px; font-weight: 650; letter-spacing: -.02em; }
+.fm-auth-form { display: grid; gap: 12px; padding: 18px 20px 20px; }
+.fm-auth-form form { display: grid; gap: 12px; }
+.fm-auth-note { font-size: 12.5px; line-height: 1.5; color: var(--text-dim); margin: 0; }
+.fm-auth-note code {
+  font-family: var(--mono); font-size: 11.5px;
+  background: var(--panel-2); border-radius: 4px; padding: 1px 5px;
+}
+.fm-auth-note-error { color: var(--danger); }
+.fm-auth-submit-btn {
+  display: flex; align-items: center; justify-content: center; gap: 7px;
+  border: none; border-radius: 9px; padding: 10px 14px;
+  background: var(--accent); color: var(--accent-ink);
+  font-size: 13px; font-weight: 700; cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+.fm-auth-submit-btn:hover:not(:disabled) { opacity: 0.9; }
+.fm-auth-submit-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* Email/other inputs inside auth dialogs â€” same visual language as the
+   rest of the app's form fields (export dialog etc.), never a bare/native
+   grey or white input. */
+.fm-auth-dialog input {
+  width: 100%; min-width: 0; height: 40px; padding: 0 12px;
+  border: 1px solid var(--line); border-radius: 9px; outline: none;
+  background: var(--panel-2); color: var(--text); font: inherit;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.fm-auth-dialog input::placeholder { color: var(--text-faint); }
+.fm-auth-dialog input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-soft);
+}
+
+/* Password fields with a show/hide (eye icon) toggle, used in the sign-in,
+   sign-up, and password-recovery forms above. The toggle is a
+   type="button" element so clicking it never submits the surrounding
+   form. */
+.fm-auth-password-field { position: relative; }
+.fm-auth-password-field input { padding-right: 40px; }
+.fm-auth-password-toggle {
+  position: absolute; top: 50%; right: 6px; transform: translateY(-50%);
+  display: grid; place-items: center; width: 28px; height: 28px;
+  border: none; background: transparent; border-radius: 7px;
+  color: var(--text-dim); cursor: pointer;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+.fm-auth-password-toggle { transition: color 0.15s ease, background 0.15s ease, transform 0.15s ease; }
+.fm-auth-password-toggle:hover { color: var(--text); background: var(--panel-2); transform: translateY(-50%) scale(1.04); }
+.fm-auth-password-toggle:active { transform: translateY(-50%) scale(0.96); }
+.fm-auth-password-toggle:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+/* -------------------------------------------------------- AUTH LOGIN GATE */
+/* Mandatory popup shown on load whenever there is no session yet. Sits on
+   top of every other overlay in the app. */
+.fm-auth-gate-backdrop { z-index: 300; }
+.fm-auth-gate-dialog { width: min(380px, calc(100vw - 32px)); }
+.fm-auth-gate-header {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 22px 20px 6px; border-bottom: none;
+}
+.fm-auth-gate-form { padding-top: 4px; }
+.fm-auth-gate-intro { display: grid; gap: 4px; text-align: center; margin-bottom: 2px; }
+.fm-auth-gate-intro h2 { margin: 0; font-size: 18px; font-weight: 700; letter-spacing: -.02em; color: var(--text); }
+.fm-auth-gate-intro .fm-auth-note { text-align: center; }
+.fm-auth-gate-email > span { text-align: left; }
+.fm-auth-gate-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.fm-auth-btn-free { background: var(--panel-3); color: var(--text); border: 1px solid var(--line); }
+.fm-auth-btn-free:hover:not(:disabled) { border-color: var(--accent); opacity: 1; color: var(--text); }
+.fm-auth-btn-pro {
+  background: var(--accent); color: var(--accent-ink);
+}
+.fm-auth-gate-wa {
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  margin-top: 4px; padding: 8px 10px;
+  border: none; background: transparent; color: var(--text-dim);
+  font-size: 12px; font-weight: 600; letter-spacing: -0.01em;
+  cursor: pointer; border-radius: 8px;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+.fm-auth-gate-wa:hover { color: var(--accent); background: var(--panel-2); }
+
+/* Sign in / Sign up switcher on the login gate, and the "Lupa password?" /
+   "Kembali ke halaman masuk" text links used across its forms. */
+.fm-auth-gate-tabs {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 6px;
+  padding: 3px; border: 1px solid var(--line); border-radius: 10px;
+  background: var(--panel-2); margin-bottom: 2px;
+}
+.fm-auth-gate-tab {
+  border: none; background: transparent; color: var(--text-dim);
+  border-radius: 7px; padding: 7px 10px; font-size: 12.5px; font-weight: 650;
+  cursor: pointer; transition: background 0.15s ease, color 0.15s ease;
+}
+.fm-auth-gate-tab:hover { color: var(--text); }
+.fm-auth-gate-tab-active { background: var(--panel); color: var(--text); box-shadow: 0 1px 3px var(--shadow); }
+.fm-auth-link-btn {
+  justify-self: start; border: none; background: transparent; padding: 0;
+  color: var(--accent); font-size: 12px; font-weight: 650; cursor: pointer;
+  text-decoration: none;
+}
+.fm-auth-link-btn:hover { text-decoration: underline; }
+
+@media (max-width: 420px) {
+  .fm-auth-gate-btns { grid-template-columns: 1fr; }
+}
+
+/* ------------------------------------------------------------- PRO MODAL */
+/* "Join PRO" upsell, shown when a FREE user taps a locked feature (Trace /
+   Family / Brush) or hits the monthly export limit. Reuses the same
+   fm-auth-* visual language as the login dialogs. */
+.fm-pro-modal-backdrop { z-index: 260; }
+.fm-pro-modal-dialog { width: min(400px, calc(100vw - 40px)); }
+.fm-pro-modal-heading { display: flex; align-items: center; gap: 9px; }
+.fm-pro-modal-icon {
+  display: grid; place-items: center; width: 28px; height: 28px; flex: 0 0 auto;
+  border-radius: 8px; background: var(--accent-soft); color: var(--accent);
+}
+.fm-pro-modal-actions { display: flex; justify-content: flex-end; }
+.fm-pro-modal-actions a.fm-auth-submit-btn { text-decoration: none; }
+
+/* ------------------------------------------------------------------ BODY */
+.fm-body { flex: 1; display: flex; min-height: 0; }
+
+/* ------------------------------------------------------------------ FLOATING TOOLBAR */
+/* Horizontal, floating, centered at the bottom of the canvas/editor area.
+   Reuses the same visual language (panel/border/accent tokens) as the rest
+   of FontSeru's chrome; only the container shape/position changed from the
+   previous left sidebar. */
+.fm-floating-toolbar {
+  position: absolute;
+  left: 50%;
+  bottom: 14px;
+  transform: translateX(-50%);
+  z-index: 20;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0;
+  padding: 5px;
+  background: color-mix(in srgb, var(--panel) 88%, transparent);
+  backdrop-filter: blur(10px);
+  border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--line));
+  border-radius: 14px;
+  box-shadow: 0 12px 34px var(--shadow), 0 0 0 1px color-mix(in srgb, var(--accent) 10%, transparent), 0 0 22px color-mix(in srgb, var(--accent) 14%, transparent);
+  max-width: calc(100% - 32px);
+}
+.fm-tool-group { display: flex; flex-direction: row; align-items: center; gap: 5px; }
+.fm-toolbar-divider { width: 1px; height: 21px; background: var(--line); margin: 0 6px; flex: 0 0 auto; }
+.fm-tool {
+  width: 35px; height: 35px; border-radius: 10px; flex: 0 0 auto;
+  border: 1px solid transparent; background: transparent; color: var(--text-dim);
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  position: relative; transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+.fm-tool:hover:not(:disabled) { background: var(--panel-2); color: var(--text); }
+.fm-tool.active { background: var(--accent-soft); color: var(--accent); border-color: color-mix(in srgb, var(--accent) 40%, transparent); }
+.fm-tool:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.fm-tool:disabled { opacity: 0.26; cursor: not-allowed; }
+.fm-tool-muted { color: var(--text-faint); opacity: 0.55; }
+
+/* PRO-locked tools (e.g. Brush, Trace Image for FREE accounts) stay visible
+   and clickable â€” clicking opens the "Join PRO" modal instead of running
+   the tool's normal action â€” just dimmed with a small lock badge. */
+.fm-tool-locked { position: relative; opacity: 0.4; }
+.fm-tool-locked:hover { opacity: 0.65; background: var(--panel-2); }
+.fm-tool-lock-badge {
+  position: absolute; top: -3px; right: -3px;
+  display: grid; place-items: center; width: 14px; height: 14px;
+  border-radius: 50%; background: var(--panel); border: 1px solid var(--line);
+  color: var(--accent);
+}
+.fm-tool-muted:hover { opacity: 0.85; background: var(--panel-2); color: var(--text-dim); }
+.fm-home-tool-icon {
+  width: 18px;
+  height: 18px;
+  display: block;
+  flex: 0 0 auto;
+
+  background-color: currentColor;
+
+  -webkit-mask-image: url("/icon-home.svg");
+  mask-image: url("/icon-home.svg");
+
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+
+  -webkit-mask-position: center;
+  mask-position: center;
+
+  -webkit-mask-size: contain;
+  mask-size: contain;
+}
+.fm-tool-tip {
+  position: absolute; left: 50%; bottom: 43px; transform: translateX(-50%);
+  background: var(--text); color: var(--bg);
+  font-size: 11px; font-weight: 600; padding: 5px 9px; border-radius: 6px;
+  white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity 0.12s ease;
+  z-index: 30; box-shadow: 0 6px 18px var(--shadow);
+}
+.fm-tool:hover .fm-tool-tip { opacity: 1; }
+
+@media (max-width: 720px) {
+  .fm-floating-toolbar { bottom: 10px; padding: 4px; gap: 0; }
+  .fm-tool { width: 30px; height: 30px; border-radius: 8px; }
+  .fm-toolbar-divider { margin: 0 3px; }
+}
+
+/* ------------------------------------------------------------------ SKETCH MODE */
+/* Additive on top of the existing canvas chrome â€” nothing here overrides or
+   removes .fm-floating-toolbar; it just adds a toggle + a second toolbar and,
+   while active, gives the canvas more room by tucking the side panels away. */
+.fm-sketch-toggle {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  z-index: 22;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 12px 8px 10px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--accent) 30%, var(--line));
+  background: color-mix(in srgb, var(--panel) 88%, transparent);
+  backdrop-filter: blur(10px);
+  color: var(--text-dim);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  box-shadow: 0 10px 28px var(--shadow);
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
+}
+.fm-sketch-toggle:hover { color: var(--text); border-color: color-mix(in srgb, var(--accent) 55%, var(--line)); }
+.fm-sketch-toggle:active { transform: scale(0.97); }
+.fm-sketch-toggle:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.fm-sketch-toggle.active {
+  background: var(--accent-soft);
+  color: var(--accent);
+  border-color: color-mix(in srgb, var(--accent) 55%, transparent);
+  box-shadow: 0 10px 28px var(--shadow), 0 0 0 1px color-mix(in srgb, var(--accent) 18%, transparent), 0 0 18px color-mix(in srgb, var(--accent) 20%, transparent);
+}
+.fm-sketch-toggle-label { white-space: nowrap; }
+@media (max-width: 720px) {
+  .fm-sketch-toggle { padding: 8px; border-radius: 50%; }
+  .fm-sketch-toggle-label { display: none; }
+}
+
+/* New, separate toolbar for Sketch Mode: Undo / Redo / Copy / Paste, left
+   edge of the canvas. Visually matches .fm-floating-toolbar's language but
+   is its own element â€” the original bottom toolbar is never touched. */
+.fm-sketch-toolbar {
+  position: absolute;
+  top: 50%;
+  left: 14px;
+  transform: translateY(-50%);
+  z-index: 21;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  padding: 5px;
+  background: color-mix(in srgb, var(--panel) 88%, transparent);
+  backdrop-filter: blur(10px);
+  border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--line));
+  border-radius: 14px;
+  box-shadow: 0 12px 34px var(--shadow), 0 0 0 1px color-mix(in srgb, var(--accent) 10%, transparent), 0 0 22px color-mix(in srgb, var(--accent) 14%, transparent);
+}
+.fm-toolbar-divider-h { width: 21px; height: 1px; margin: 3px 0; }
+.fm-tool-tip-right {
+  left: auto; right: -9px; bottom: auto; top: 50%;
+  transform: translate(100%, -50%);
+}
+.fm-sketch-toolbar .fm-tool:hover .fm-tool-tip-right { opacity: 1; }
+.fm-tool-danger:hover:not(:disabled) { color: var(--danger); background: color-mix(in srgb, var(--danger) 14%, transparent); }
+/* Drag handle: grabbing this (not the buttons) repositions the toolbar
+   freely within the canvas. Orientation flips automatically based on
+   which edge of the canvas it ends up closest to â€” see SketchToolbar.tsx. */
+.fm-sketch-toolbar-grip {
+  width: 100%; height: 14px;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--text-faint);
+  cursor: grab;
+  touch-action: none;
+}
+.fm-sketch-toolbar-grip:active { cursor: grabbing; }
+/* Horizontal layout: dropped near the top or bottom edge of the canvas. */
+.fm-sketch-toolbar.horizontal {
+  flex-direction: row;
+}
+.fm-sketch-toolbar.horizontal .fm-sketch-toolbar-grip {
+  width: 14px; height: 100%;
+}
+@media (max-width: 720px) {
+  .fm-sketch-toolbar { left: 8px; padding: 4px; gap: 3px; }
+  .fm-sketch-toolbar .fm-tool { width: 30px; height: 30px; border-radius: 8px; }
+}
+
+/* Cleaner, wider canvas while sketching: fold the glyph list out of the
+   way. Nothing is unmounted â€” this is pure CSS, so leaving Sketch Mode
+   restores the normal layout instantly with all panel state intact. */
+.fm-root[data-sketch-mode="true"] .fm-glyphnav {
+  width: 0;
+  min-width: 0;
+  border-right-width: 0;
+  overflow: hidden;
+  pointer-events: none;
+  transition: width 0.18s ease, border-color 0.18s ease;
+}
+/* Right inspector panel becomes an on-demand drawer instead of taking
+   permanent layout width: it's absolutely positioned over the canvas and
+   slides in from the right edge via SketchRightPanelToggle, so the canvas
+   itself keeps the full extra width Sketch Mode is meant to give it. */
+.fm-root[data-sketch-mode="true"] .fm-body { position: relative; }
+.fm-root[data-sketch-mode="true"] .fm-rightpanel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 288px;
+  min-width: 288px;
+  overflow-y: auto;
+  pointer-events: auto;
+  transform: translateX(100%);
+  transition: transform 0.22s ease;
+  z-index: 24;
+  box-shadow: -14px 0 34px var(--shadow);
+}
+.fm-root[data-sketch-mode="true"][data-sketch-panel-open="true"] .fm-rightpanel {
+  transform: translateX(0);
+}
+.fm-root[data-sketch-mode="true"] .fm-canvas-area { padding: 10px; }
+.fm-root[data-sketch-mode="true"] .fm-canvas-frame { border-radius: 10px; }
+/* Sketch Mode targets tablets/pen displays first, so touch-drag never
+   scrolls or rubber-bands the page behind the canvas. */
+.fm-root[data-sketch-mode="true"] .fm-canvas-wrap { touch-action: none; }
+
+/* Right-panel drawer toggle: sits on the right edge of the canvas and
+   tracks the drawer as it opens, so it always reads as "attached" to it. */
+.fm-sketch-panel-toggle {
+  position: absolute;
+  top: 50%;
+  right: 14px;
+  transform: translateY(-50%);
+  z-index: 25;
+  width: 30px; height: 30px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 50%;
+  border: 1px solid color-mix(in srgb, var(--accent) 30%, var(--line));
+  background: color-mix(in srgb, var(--panel) 88%, transparent);
+  backdrop-filter: blur(10px);
+  color: var(--text-dim);
+  cursor: pointer;
+  box-shadow: 0 10px 26px var(--shadow);
+  transition: right 0.22s ease, color 0.15s ease, border-color 0.15s ease;
+}
+.fm-sketch-panel-toggle:hover { color: var(--text); border-color: color-mix(in srgb, var(--accent) 55%, var(--line)); transform: translateY(-50%) scale(1.06); }
+.fm-sketch-panel-toggle:active { transform: translateY(-50%) scale(0.94); }
+.fm-sketch-panel-toggle:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.fm-root[data-sketch-mode="true"][data-sketch-panel-open="true"] .fm-sketch-panel-toggle { right: 302px; }
+@media (max-width: 720px) {
+  .fm-root[data-sketch-mode="true"] .fm-rightpanel { width: 84vw; min-width: 0; }
+  .fm-root[data-sketch-mode="true"][data-sketch-panel-open="true"] .fm-sketch-panel-toggle { right: calc(84vw + 14px); }
+}
+
+/* Glyph Prev/Next stepper: centered just above the existing bottom-center
+   FloatingToolbar, Sketch Mode only (the glyph list sidebar is hidden while
+   sketching, so this is the replacement way to move between glyphs). */
+.fm-glyph-stepper {
+  position: absolute;
+  left: 50%;
+  bottom: 67px;
+  transform: translateX(-50%);
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 10px;
+  background: color-mix(in srgb, var(--panel) 88%, transparent);
+  backdrop-filter: blur(10px);
+  border: 1px solid color-mix(in srgb, var(--accent) 30%, var(--line));
+  border-radius: 999px;
+  box-shadow: 0 10px 26px var(--shadow);
+}
+.fm-glyph-stepper-btn {
+  width: 26px; height: 26px; border-radius: 50%;
+  border: 1px solid transparent; background: transparent; color: var(--text-dim);
+  display: flex; align-items: center; justify-content: center; cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.fm-glyph-stepper-btn:hover:not(:disabled) { background: var(--panel-2); color: var(--text); }
+.fm-glyph-stepper-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.fm-glyph-stepper-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+.fm-glyph-stepper-char {
+  font-size: 13px; font-weight: 700; min-width: 14px; text-align: center; color: var(--text);
+}
+@media (max-width: 720px) {
+  .fm-glyph-stepper { bottom: 54px; padding: 3px 8px; gap: 6px; }
+  .fm-glyph-stepper-btn { width: 32px; height: 32px; }
+}
+/* Tablet/touchscreen: significantly larger, easier-to-tap Prev/Next glyph
+   buttons, still minimalist (icon-only, same style, just bigger targets).
+   Keyed off (pointer: coarse) rather than screen width so it targets touch
+   input specifically and leaves mouse/trackpad users unaffected. */
+@media (pointer: coarse) {
+  .fm-glyph-stepper { padding: 7px 16px; gap: 12px; }
+  .fm-glyph-stepper-btn { width: 48px; height: 48px; }
+  .fm-glyph-stepper-btn svg { width: 22px; height: 22px; }
+  .fm-glyph-stepper-char { font-size: 16px; min-width: 18px; }
+}
+
+/* Glyph Prev/Next side arrows: Normal Mode only (Sketch Mode keeps its own
+   GlyphStepper). Minimalist outlined circular buttons that float over the
+   canvas (translucent panel background + soft shadow) â€” filled green only
+   while pressed/active, with a scale-up hover effect â€” docked a bit in
+   from the left/right edges, vertically centered on the canvas. */
+.fm-glyph-sidenav-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 20;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 1.5px solid var(--accent);
+  background: color-mix(in srgb, var(--panel) 85%, transparent);
+  backdrop-filter: blur(6px);
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 6px 18px -6px color-mix(in srgb, var(--accent) 45%, transparent), 0 2px 8px var(--shadow);
+  transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+}
+.fm-glyph-sidenav-btn:hover:not(:disabled) {
+  transform: translateY(-50%) scale(1.08);
+  box-shadow: 0 8px 22px -6px color-mix(in srgb, var(--accent) 60%, transparent), 0 3px 10px var(--shadow);
+}
+.fm-glyph-sidenav-btn:active:not(:disabled) { background: var(--accent); color: var(--accent-ink); transform: translateY(-50%) scale(0.96); }
+.fm-glyph-sidenav-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.fm-glyph-sidenav-btn:disabled { opacity: 0.3; cursor: not-allowed; box-shadow: none; }
+.fm-glyph-sidenav-btn-left { left: 40px; }
+.fm-glyph-sidenav-btn-right { right: 40px; }
+@media (max-width: 720px) {
+  .fm-glyph-sidenav-btn-left { left: 18px; }
+  .fm-glyph-sidenav-btn-right { right: 18px; }
+}
+@media (pointer: coarse) {
+  .fm-glyph-sidenav-btn { width: 44px; height: 44px; }
+  .fm-glyph-sidenav-btn svg { width: 24px; height: 24px; }
+}
+
+/* Global button hover feedback: a subtle scale-up on hover across the
+   app's buttons, so every actionable button reads as interactive. Applied
+   broadly at the element level so it never overrides any button's own
+   hover colors/background (those are separate properties, set by more
+   specific selectors, and keep working exactly as before). Excluded:
+   buttons that already manage their own hover transform, so this doesn't
+   clobber their existing motion â€” .fm-tile and .fm-brush-card (lift on
+   hover), .fm-glyph-sidenav-btn (handles its own scale + centering
+   transform together, above), and any button centered with
+   `transform: translateY(-50%)` â€” .fm-auth-password-toggle (the
+   show/hide-password eye button) and .fm-sketch-panel-toggle (the
+   Sketch Mode right-panel drawer arrow). For those, a bare `scale(1.04)`
+   here would replace their centering transform outright and the button
+   would visibly jump instead of just growing, so they get their own
+   centering-aware hover/active transforms below instead. */
+button:not(:disabled):not(.fm-tile):not(.fm-brush-card):not(.fm-glyph-sidenav-btn):not(.fm-auth-password-toggle):not(.fm-sketch-panel-toggle) {
+  transition: transform 0.15s ease;
+}
+button:hover:not(:disabled):not(.fm-tile):not(.fm-brush-card):not(.fm-glyph-sidenav-btn):not(.fm-auth-password-toggle):not(.fm-sketch-panel-toggle) {
+  transform: scale(1.04);
+}
+
+
+/* ------------------------------------------------------------------ GLYPH NAV */
+.fm-glyphnav {
+  width: 244px; flex: 0 0 auto;
+  background: var(--panel); border-right: 1px solid var(--line);
+  display: flex; flex-direction: column; min-height: 0;
+}
+.fm-glyphnav-head { padding: 14px 14px 10px; border-bottom: 1px solid var(--line-soft); }
+.fm-panel-eyebrow {
+  display: block; font-family: var(--mono); font-size: 10px; letter-spacing: 0.16em;
+  text-transform: uppercase; color: var(--text-faint); margin-bottom: 10px;
+}
+.fm-family-tabs {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+  margin-bottom: 10px;
+}
+.fm-family-tabs button {
+  min-width: 0;
+  height: 31px;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: var(--panel-2);
+  color: color-mix(in srgb, var(--text) 72%, var(--text-dim));
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  transition: background 0.14s ease, border-color 0.14s ease, color 0.14s ease, box-shadow 0.14s ease, transform 0.1s ease;
+}
+.fm-family-tabs button:hover:not(.active) {
+  color: var(--text);
+  border-color: var(--text-faint);
+}
+.fm-family-tabs button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.fm-family-tabs button.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-ink);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--accent) 64%, transparent),
+    0 0 14px color-mix(in srgb, var(--accent) 34%, transparent),
+    inset 0 1px 0 color-mix(in srgb, #fff 30%, transparent);
+}
+.fm-family-tabs button:active { transform: translateY(1px); }
+.fm-family-tabs button.fm-family-tab-locked {
+  opacity: 0.5;
+  cursor: pointer;
+}
+.fm-family-tabs button.fm-family-tab-locked:hover {
+  opacity: 0.75;
+}
+.fm-family-tabs button.fm-family-tab-locked .fm-lock-badge-inline {
+  margin-left: 3px;
+}
+
+.fm-search { position: relative; }
+.fm-search input {
+  width: 100%; padding: 9px 10px 9px 32px;
+  border-radius: 9px; border: 1px solid var(--line);
+  background: var(--panel-2); color: var(--text);
+  font-size: 12.5px; outline: none; transition: border-color 0.15s ease;
+}
+.fm-search input:focus { border-color: var(--accent); }
+.fm-search svg { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--text-faint); }
+
+.fm-glyphlist { flex: 1; overflow-y: auto; padding: 0 12px 16px; }
+.fm-glyphnav-foot { flex: 0 0 auto; padding: 10px 12px 12px; border-top: 1px solid var(--line-soft); }
+.fm-glyphnav-foot .fm-action-btn { display: flex; align-items: center; justify-content: center; gap: 6px; }
+.fm-group-label {
+  font-family: var(--mono); font-size: 10px; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--text-faint); margin: 16px 2px 8px;
+}
+.fm-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 7px; }
+.fm-tile {
+  aspect-ratio: 1; border-radius: 11px;
+  border: 1px solid var(--line); background: var(--panel-2);
+  cursor: pointer; position: relative; overflow: hidden;
+  display: flex; align-items: center; justify-content: center;
+  transition: border-color 0.14s ease, background 0.14s ease, transform 0.1s ease;
+}
+.fm-tile:hover { border-color: var(--text-faint); transform: translateY(-1px); }
+.fm-tile:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.fm-tile.active { background: var(--accent-soft); border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+.fm-tile-thumb { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: var(--thumb-ink); }
+.fm-tile.active .fm-tile-thumb { color: var(--accent); }
+.fm-thumb-svg { width: 78%; height: 78%; display: block; }
+.fm-thumb-char { font-size: 20px; font-weight: 600; color: var(--text-dim); line-height: 1; }
+.fm-tile.active .fm-thumb-char { color: var(--accent); }
+.fm-tile-dot {
+  position: absolute; top: 6px; right: 6px; width: 6px; height: 6px;
+  border-radius: 50%; background: var(--accent); box-shadow: 0 0 6px var(--accent);
+}
+
+/* ------------------------------------------------------------------ CANVAS */
+.fm-canvas-wrap { flex: 1; display: flex; flex-direction: column; min-width: 0; background: var(--bg); }
+.fm-canvas-area { flex: 1; min-height: 0; padding: 20px; display: flex; position: relative; }
+.fm-canvas-frame {
+  flex: 1; min-width: 0;
+  background:
+    radial-gradient(120% 120% at 50% 0%, color-mix(in srgb, var(--panel-2) 40%, var(--canvas)) 0%, var(--canvas) 60%);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--text) 6%, transparent);
+  overflow: hidden;
+  position: relative;
+}
+.fm-canvas-frame svg { display: block; width: 100%; height: 100%; }
+
+/* ------------------------------------------------------------------ BOTTOM BAR */
+.fm-bottombar {
+  height: 44px; flex: 0 0 auto;
+  border-top: 1px solid var(--line); background: var(--panel);
+  display: flex; align-items: center; gap: 12px; padding: 0 16px;
+  font-size: 12px; color: var(--text-dim);
+}
+.fm-bottombar button {
+  display: flex; align-items: center; gap: 6px;
+  background: transparent; border: none; color: var(--text-dim);
+  cursor: pointer; font-size: 12px; font-weight: 600;
+  padding: 5px 9px; border-radius: 8px; transition: background 0.14s ease, color 0.14s ease;
+}
+.fm-bottombar button:hover { background: var(--panel-2); color: var(--text); }
+.fm-bottombar button.on { color: var(--accent); background: var(--accent-soft); }
+.fm-bottom-divider { width: 1px; height: 20px; background: var(--line); }
+.fm-icon-btn { padding: 5px !important; }
+.fm-zoom-controls { display: flex; align-items: center; gap: 8px; }
+.fm-zoom-value { font-family: var(--mono); font-size: 11.5px; color: var(--text); min-width: 42px; text-align: center; }
+.fm-grid-size-value { font-family: var(--mono); font-size: 11px; color: var(--text); min-width: 28px; text-align: center; }
+.fm-zoom-controls input[type="range"] { width: 110px; accent-color: var(--accent); }
+.fm-upm { font-family: var(--mono); font-size: 11px; color: var(--text-faint); }
+.fm-hint-inline { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+.fm-inline-field { display: flex; align-items: center; gap: 6px; font-size: 11.5px; color: var(--text-dim); }
+.fm-inline-field input {
+  width: 58px; padding: 4px 7px; border-radius: 7px; border: 1px solid var(--line);
+  background: var(--panel-2); color: var(--text); font-family: var(--mono); font-size: 11.5px; outline: none;
+}
+.fm-inline-field input:focus { border-color: var(--accent); }
+
+.fm-segmented { display: flex; border: 1px solid var(--line); border-radius: 9px; overflow: hidden; }
+.fm-segmented button { padding: 5px 12px; border-radius: 0; font-size: 11.5px; }
+.fm-segmented button + button { border-left: 1px solid var(--line); }
+.fm-segmented button.active { background: var(--accent-soft); color: var(--accent); }
+
+/* Ghost mode selector: intentionally restrained, using the same panel/border language as FontSeru. */
+.fm-ghost-mode {
+  padding: 3px;
+  gap: 3px;
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  overflow: visible;
+}
+.fm-ghost-mode button {
+  flex: 1;
+  justify-content: center;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  padding: 6px 8px;
+}
+.fm-ghost-mode button + button { border-left: 1px solid transparent; }
+.fm-ghost-mode button:hover:not(.active) {
+  background: var(--panel-3);
+  color: var(--text);
+  border-color: color-mix(in srgb, var(--text-faint) 35%, transparent);
+}
+.fm-ghost-mode button.active {
+  background: var(--accent-soft);
+  color: var(--accent);
+  border-color: color-mix(in srgb, var(--accent) 42%, var(--line));
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--text) 5%, transparent);
+}
+
+/* Minimalist text-tab control â€” no border/background box, just weight + color + underline for the active option. */
+.fm-tab-select { display: flex; gap: 16px; }
+.fm-tab-select button {
+  background: none;
+  border: none;
+  padding: 2px 0 6px;
+  font-size: 11.5px;
+  font-weight: 600;
+  font-family: var(--sans);
+  color: var(--text-faint);
+  cursor: pointer;
+  position: relative;
+}
+.fm-tab-select button:hover { color: var(--text); }
+.fm-tab-select button.active { color: var(--accent); }
+.fm-tab-select button.active::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--accent);
+}
+
+/* ------------------------------------------------------------------ RIGHT PANEL */
+.fm-rightpanel { width: 288px; flex: 0 0 auto; background: var(--panel); border-left: 1px solid var(--line); overflow-y: auto; }
+.fm-panel-header {
+  padding: 16px 18px; border-bottom: 1px solid var(--line);
+  display: flex; align-items: center; gap: 14px;
+}
+.fm-panel-glyph {
+  width: 60px; height: 60px; border-radius: 13px;
+  background: var(--panel-2); border: 1px solid var(--line);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--accent); flex: 0 0 auto;
+}
+.fm-panel-glyph .fm-thumb-svg { width: 78%; height: 78%; }
+.fm-panel-glyph .fm-thumb-char { font-size: 34px; font-weight: 700; color: var(--text); }
+.fm-panel-meta { min-width: 0; }
+.fm-panel-char { font-size: 22px; font-weight: 700; letter-spacing: -0.01em; color: var(--text); line-height: 1.1; }
+.fm-panel-code { font-family: var(--mono); font-size: 11px; color: var(--text-dim); margin-top: 3px; }
+.fm-panel-cat { font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent); font-weight: 700; margin-top: 4px; }
+
+.fm-section { border-bottom: 1px solid var(--line-soft); }
+.fm-section-head {
+  width: 100%; display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 18px; background: transparent; border: none; cursor: pointer; color: var(--text);
+}
+.fm-section-title { font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-dim); font-weight: 700; }
+.fm-section-caret { color: var(--text-faint); transition: transform 0.18s ease; }
+.fm-section.closed .fm-section-caret { transform: rotate(-90deg); }
+.fm-section-body { padding: 0 18px 16px; }
+
+.fm-field { margin-bottom: 11px; }
+.fm-field:last-child { margin-bottom: 0; }
+.fm-field label { display: block; font-size: 11.5px; color: var(--text-dim); margin-bottom: 5px; }
+.fm-field input[type="number"] {
+  width: 100%; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--line);
+  background: var(--panel-2); color: var(--text); font-family: var(--mono); font-size: 12.5px; outline: none;
+  transition: border-color 0.15s ease;
+}
+.fm-field input[type="number"]:focus { border-color: var(--accent); }
+
+/* Shared numeric stepper: keep native number-input keyboard behavior, replace only the browser chrome. */
+input[type="number"] {
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.fm-numeric-control {
+  position: relative;
+  display: inline-flex;
+  align-items: stretch;
+  max-width: 100%;
+}
+.fm-field > .fm-numeric-control,
+.fm-field .fm-angle-control .fm-numeric-control {
+  width: 100%;
+}
+.fm-numeric-control > input {
+  padding-right: 27px !important;
+}
+.fm-numeric-stepper {
+  position: absolute;
+  right: 5px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: grid;
+  grid-template-rows: 12px 12px;
+  z-index: 1;
+}
+.fm-numeric-stepper button {
+  width: 18px;
+  height: 12px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--text-dim);
+  cursor: ns-resize;
+  line-height: 1;
+  touch-action: none;
+  user-select: none;
+}
+.fm-numeric-stepper button:hover:not(:disabled) { color: var(--text); }
+.fm-numeric-stepper button:active:not(:disabled) { color: var(--accent); }
+.fm-numeric-stepper button:focus-visible { outline: none; color: var(--accent); }
+.fm-numeric-stepper button:disabled { opacity: .35; cursor: default; }
+.fm-slider-row-label .fm-numeric-control { width: 70px; }
+.fm-inline-field .fm-numeric-control { width: 58px; }
+.fm-angle-control {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.fm-angle-control > span {
+  flex: 0 0 auto;
+  color: var(--text-dim);
+  font-family: var(--mono);
+  font-size: 12px;
+}
+.fm-field input[type="range"] { width: 100%; accent-color: var(--accent); }
+.fm-slider-row-label { display: flex; justify-content: space-between; align-items: baseline; font-size: 11.5px; color: var(--text-dim); margin-bottom: 5px; }
+.fm-slider-row-label span { font-family: var(--mono); color: var(--text); font-size: 11px; }
+/* Label + optional adornment (e.g. Stroke Width's lock toggle) share the
+   label's side of the row, keeping the existing label/value space-between
+   layout intact. */
+.fm-slider-label-group { display: flex; align-items: center; gap: 5px; font-family: inherit; }
+.fm-slider-label-group label { font-family: inherit; }
+.fm-lock-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 18px; height: 18px; padding: 0; border-radius: 4px;
+  border: 1px solid transparent; background: transparent; color: var(--text-faint);
+  cursor: pointer; transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+.fm-lock-btn:hover { background: var(--panel-2); color: var(--text-dim); }
+.fm-lock-btn.active { color: var(--accent); border-color: color-mix(in srgb, var(--accent) 40%, transparent); background: color-mix(in srgb, var(--accent) 12%, transparent); }
+.fm-lock-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.fm-field input.fm-slider-number {
+  width: 70px;
+  padding: 4px 7px;
+  border-radius: 7px;
+  border: 1px solid var(--line);
+  background: var(--panel-2);
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 11.5px;
+  text-align: right;
+  outline: none;
+}
+.fm-field input.fm-slider-number:focus { border-color: var(--accent); }
+.fm-checkbox-row { display: flex; align-items: center; gap: 9px; font-size: 12px; color: var(--text); cursor: pointer; }
+/* Minimalist outline checkbox, matching .fm-export-checkmark elsewhere in
+   the app: transparent fill at all times (checked or not), just a border
+   and a small checkmark glyph â€” no solid accent-color fill box. */
+.fm-checkbox-row input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 15px;
+  height: 15px;
+  flex: 0 0 15px;
+  margin: 0;
+  display: inline-grid;
+  place-items: center;
+  border: 1.5px solid var(--line-strong, var(--line));
+  border-radius: 4px;
+  background: transparent;
+  cursor: pointer;
+  transition: border-color .12s ease, box-shadow .12s ease;
+}
+.fm-checkbox-row input[type="checkbox"]:checked {
+  border-color: var(--accent);
+  background: transparent;
+}
+.fm-checkbox-row input[type="checkbox"]:checked::after {
+  content: "";
+  width: 4px;
+  height: 7.5px;
+  margin-top: -1.5px;
+  border-right: 1.5px solid var(--accent);
+  border-bottom: 1.5px solid var(--accent);
+  transform: rotate(45deg);
+}
+.fm-checkbox-row input[type="checkbox"]:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--accent-soft);
+}
+.fm-checkbox-row input[type="checkbox"]:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.fm-hint { font-size: 11px; color: var(--text-dim); line-height: 1.6; }
+.fm-status-pill {
+  display: inline-flex; align-items: center; gap: 7px; font-size: 11.5px; color: var(--text-dim);
+  background: var(--panel-2); border: 1px solid var(--line); padding: 6px 11px; border-radius: 20px;
+}
+.fm-status-pill.done { color: var(--accent); background: var(--accent-soft); border-color: color-mix(in srgb, var(--accent) 40%, transparent); }
+.fm-status-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--text-dim); }
+.fm-status-pill.done .fm-status-dot { background: var(--accent); }
+
+.fm-kind-list { margin: 10px 0; display: flex; flex-direction: column; gap: 5px; }
+.fm-kind-row { display: flex; align-items: center; gap: 8px; font-size: 11.5px; color: var(--text); }
+.fm-kind-dot { width: 8px; height: 8px; border-radius: 3px; }
+.fm-kind-dot.shape, .fm-kind-dot.expanded { background: var(--ink); }
+.fm-kind-dot.line { background: var(--node-smooth); }
+.fm-kind-dot.brush { background: var(--node-symmetric); }
+
+.fm-node-type-row { display: flex; gap: 6px; }
+.fm-node-type-btn {
+  flex: 1; padding: 7px 0; border-radius: 8px; border: 1px solid var(--line);
+  background: var(--panel-2); color: var(--text-dim); font-size: 11px; font-weight: 600;
+  cursor: pointer; transition: border-color 0.14s ease, color 0.14s ease, background 0.14s ease;
+}
+.fm-node-type-btn:hover { border-color: var(--text-faint); color: var(--text); }
+.fm-node-type-btn.active { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
+
+.fm-action-btn {
+  width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 10px; border-radius: 10px; border: 1px solid var(--line); background: var(--panel-2);
+  color: var(--text); font-size: 12.5px; font-weight: 600; cursor: pointer; margin-top: 10px;
+  transition: border-color 0.14s ease, background 0.14s ease, color 0.14s ease;
+}
+.fm-action-btn:hover { border-color: var(--text-faint); }
+.fm-action-btn.accent { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.fm-action-btn.accent:hover { background: var(--accent-2); }
+.fm-action-btn.danger { color: var(--danger); }
+.fm-action-btn.danger:hover { border-color: var(--danger); background: color-mix(in srgb, var(--danger) 12%, transparent); }
+/* PRO-locked action (e.g. "Generate From Regular" for FREE accounts) â€”
+   stays visible/clickable, opens the "Join PRO" modal instead of running. */
+.fm-action-btn-locked { opacity: 0.5; }
+.fm-action-btn-locked:hover { opacity: 0.75; }
+.fm-btn-row { display: flex; gap: 8px; }
+.fm-btn-row .fm-action-btn { margin-top: 10px; }
+
+.fm-brush-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.fm-brush-card {
+  display: flex; flex-direction: row; align-items: center; gap: 9px;
+  padding: 10px 11px; border-radius: 12px; border: 1px solid var(--line);
+  background: var(--panel-2); cursor: pointer; text-align: left;
+  transition: border-color 0.14s ease, background 0.14s ease, transform 0.1s ease;
+}
+.fm-brush-card:hover { border-color: var(--text-faint); transform: translateY(-1px); }
+.fm-brush-card.active { border-color: var(--accent); background: var(--accent-soft); }
+.fm-brush-icon {
+  width: 30px; height: 30px; border-radius: 9px; display: flex; align-items: center; justify-content: center;
+  background: var(--panel-3); color: var(--text);
+}
+.fm-brush-card.active .fm-brush-icon { background: var(--accent); color: var(--accent-ink); }
+.fm-brush-name { font-size: 12px; font-weight: 700; color: var(--text); }
+.fm-brush-card.active .fm-brush-name { color: var(--accent); }
+
+@media (max-width: 1180px) {
+  .fm-glyphnav { width: 200px; }
+  .fm-rightpanel { width: 250px; }
+
+  /* Tablet landscape (1024â€“1180): compact the top bar so File / Undo / Redo /
+     Family / Test Lab / Export keep their click targets and tooltips but no
+     longer force horizontal overflow. Icons + tooltips remain fully usable;
+     only the visible text label is collapsed via font-size, nothing is removed. */
+  .fm-topbar { gap: 8px; padding: 0 10px; }
+  .fm-topbar .fm-topbtn {
+    font-size: 0;
+    gap: 0;
+    padding: 8px;
+    min-width: 40px;
+    min-height: 40px;
+    justify-content: center;
+  }
+  .fm-topbar .fm-topbtn svg { flex: 0 0 auto; }
+  .fm-topbtn-group { gap: 4px; }
+  .fm-theme-toggle { width: 40px; height: 40px; flex: 0 0 auto; }
+
+  .fm-zoom-controls input[type="range"] { width: 90px; }
+
+  /* Bottom bar: same icon-first treatment as the top bar â€” labels collapse,
+     tooltips/titles and click targets stay intact. */
+  .fm-bottombar { gap: 8px; padding: 0 10px; }
+  .fm-bottombar button {
+    font-size: 0;
+    gap: 0;
+    padding: 8px;
+    min-width: 40px;
+    min-height: 36px;
+    justify-content: center;
+  }
+  .fm-bottombar button svg { flex: 0 0 auto; }
+  .fm-bottombar .fm-icon-btn { padding: 8px !important; min-width: 32px; min-height: 32px; }
+  .fm-inline-field { gap: 4px; }
+  .fm-hint-inline { gap: 6px; }
+}
+
+/* ------------------------------------------------------------ TABLET PORTRAIT
+   768â€“900px wide (e.g. 768Ã—1024, 820Ã—1180). Sidebars shrink further so the
+   canvas + floating toolbar keep real working room; the glyph grid drops to
+   3 columns so tiles stay a comfortable touch size instead of shrinking with
+   a 4th column. Nothing here changes desktop (>1180px) styles above. */
+@media (max-width: 900px) {
+  .fm-glyphnav { width: 165px; }
+  .fm-rightpanel { width: 205px; }
+  .fm-grid { grid-template-columns: repeat(3, 1fr); }
+
+  .fm-canvas-area { padding: clamp(8px, 2vw, 20px); }
+
+  /* Safety net: if the compacted controls still don't all fit at the
+     narrowest widths, the bar scrolls horizontally within its own 40â€“44px
+     strip instead of the page gaining a horizontal scrollbar or any control
+     being clipped/hidden. */
+  .fm-bottombar {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    flex-wrap: nowrap;
+  }
+  .fm-bottombar > * { flex: 0 0 auto; }
+  .fm-zoom-controls input[type="range"] { width: 70px; }
+
+  .fm-floating-toolbar { max-width: calc(100% - 20px); }
+}
+
+/* ================================================================
+   Font Test Lab / Kerning Editor overlay (Phase 6) â€” additive only,
+   does not modify any existing selector above.
+   ================================================================ */
+
+.fm-lab-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(2px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  padding: 32px;
+}
+
+.fm-lab-modal {
+  width: min(1180px, 100%);
+  height: min(820px, 100%);
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  box-shadow: 0 24px 64px var(--shadow);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.fm-lab-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--line);
+  flex: 0 0 auto;
+}
+.fm-lab-tabs button { display: flex; align-items: center; gap: 6px; }
+
+.fm-lab-body { flex: 1; min-height: 0; overflow-y: auto; padding: 20px 24px; }
+
+.fm-lab-grid { display: flex; gap: 24px; height: 100%; }
+.fm-lab-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 14px; }
+.fm-lab-side { width: 260px; flex: 0 0 auto; }
+
+.fm-lab-preview-frame {
+  background: var(--canvas);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 220px;
+  color: var(--thumb-ink);
+}
+
+.fm-lab-controls-row { display: flex; gap: 14px; align-items: flex-end; flex-wrap: wrap; }
+.fm-lab-controls-row .fm-field { margin-bottom: 0; min-width: 90px; }
+.fm-field select {
+  width: 100%;
+  padding: 7px 9px;
+  border-radius: 6px;
+  border: 1px solid var(--line);
+  background: var(--panel-2);
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 12.5px;
+  outline: none;
+}
+.fm-field select:focus { border-color: var(--accent); }
+
+.fm-lab-test-row { display: flex; flex-wrap: wrap; gap: 6px; }
+.fm-lab-test-btn {
+  padding: 6px 12px;
+  border-radius: 20px;
+  border: 1px solid var(--line);
+  background: var(--panel-2);
+  color: var(--text-dim);
+  font-size: 12px;
+  font-family: var(--sans);
+  font-weight: 600;
+  cursor: pointer;
+}
+.fm-lab-test-btn:hover { border-color: var(--text-faint); color: var(--text); }
+.fm-lab-test-btn.active { border-color: var(--accent); color: var(--accent-ink); background: var(--accent); }
+
+.fm-lab-stage {
+  flex: 1;
+  min-height: 320px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  padding: 28px;
+  overflow: auto;
+}
+.fm-lab-stage.dark { background: #0a0c0b; color: #f2f5f2; }
+.fm-lab-stage.light { background: #ffffff; color: #14160f; }
+.fm-lab-stage:not(.fm-family-stage) {
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+.fm-lab-lines { display: flex; flex-direction: column; position: relative; z-index: 2; pointer-events: none; }
+
+.fm-lab-editable-wrap {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  cursor: text;
+}
+.fm-lab-stage-input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  min-height: 100%;
+  resize: none;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: transparent;
+  /* The browser's own caret uses its own font metrics, which is exactly the
+     approximation we're replacing â€” hide it and draw `.fm-lab-caret` (real
+     glyph-metric caret, see useTypingCaret) in its place instead. */
+  caret-color: transparent;
+  font-family: var(--sans);
+  padding: 0;
+  overflow: hidden;
+  z-index: 1;
+}
+.fm-lab-stage-input::selection { background: transparent; color: transparent; }
+
+/* Real glyph-metric caret â€” positioned from FontSeru's own layout engine
+   (advance width, LSB/RSB, kerning), not the textarea's font metrics. */
+.fm-lab-caret {
+  position: absolute;
+  width: 2px;
+  margin-left: 2px;
+  background: var(--accent);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 12%, transparent);
+  pointer-events: none;
+  animation: fm-caret-blink 1s step-end infinite;
+}
+@keyframes fm-caret-blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+.fm-lab-allglyphs-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(64px, 1fr)); gap: 8px; margin-bottom: 16px; }
+.fm-lab-allglyph-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 4px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.03);
+}
+.fm-lab-allglyph-thumb { width: 40px; height: 40px; }
+.fm-lab-allglyph-label { font-family: var(--mono); font-size: 10px; opacity: 0.6; }
+.fm-lab-allglyph-cell.done .fm-lab-allglyph-label { opacity: 1; color: var(--accent-2, inherit); }
+
+
+/* Refinement pass: compact cap controls + lightweight Test Lab / Kerning UI. */
+.fm-cap-control {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel-2);
+}
+.fm-cap-btn {
+  width: 34px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-dim);
+  cursor: pointer;
+}
+.fm-cap-btn:hover { color: var(--text); background: var(--panel-3); }
+.fm-cap-btn.active { color: var(--accent); background: var(--accent-soft); }
+.fm-cap-icon {
+  position: relative;
+  width: 20px;
+  height: 10px;
+  display: block;
+}
+.fm-cap-icon::before {
+  content: "";
+  position: absolute;
+  left: 4px;
+  right: 4px;
+  top: 4px;
+  height: 2px;
+  background: currentColor;
+}
+.fm-cap-icon.butt::after,
+.fm-cap-icon.square::after,
+.fm-cap-icon.round::after {
+  content: "";
+  position: absolute;
+  inset: 1px 3px;
+  border: 1px solid currentColor;
+}
+.fm-cap-icon.butt::after { border-top: 0; border-bottom: 0; border-radius: 0; }
+.fm-cap-icon.square::after { border-radius: 0; }
+.fm-cap-icon.round::after { border-radius: 7px; }
+
+/* Test Lab/Kerning tabs are intentionally text/icon tabs, not cards. */
+.fm-lab-tabs {
+  border: 0;
+  border-radius: 0;
+  overflow: visible;
+  gap: 4px;
+}
+.fm-lab-tabs button {
+  position: relative;
+  border: 0 !important;
+  background: transparent !important;
+  color: var(--text-dim);
+  padding: 7px 9px 8px;
+  border-radius: 6px !important;
+}
+.fm-lab-tabs button:hover { color: var(--text); background: var(--panel-2) !important; }
+.fm-lab-tabs button.active { color: var(--accent); background: transparent !important; }
+.fm-lab-tabs button.active::after {
+  content: "";
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  bottom: -12px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--accent);
+}
+
+.fm-kern-eyebrow {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+
+.fm-kern-pair-head {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 18px;
+}
+.fm-kern-selected-pair {
+  margin-top: 4px;
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  font-family: var(--mono);
+  font-size: 34px;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  color: var(--text);
+}
+.fm-kern-selected-pair > span {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0;
+  color: var(--accent);
+}
+
+/* One glyph-centric kerning specimen. FontSeru SVG geometry remains the
+   renderer; transparent hit regions only select/drag glyph advance boxes. */
+.fm-kern-stage {
+  background: var(--canvas);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 28px;
+  min-height: 200px;
+  overflow: auto;
+  color: var(--thumb-ink);
+}
+.fm-kern-active-box {
+  position: absolute;
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 45%, transparent);
+  pointer-events: none;
+}
+.fm-lab-selection-box {
+  position: absolute;
+  z-index: 4;
+  border: 1px solid var(--accent);
+  border-radius: 4px;
+  background: var(--accent);
+  box-shadow: 0 0 10px var(--accent);
+  opacity: .2;
+  pointer-events: none;
+}
+.fm-kern-glyph-hit {
+  position: absolute;
+  cursor: ew-resize;
+  touch-action: none;
+  pointer-events: auto;
+  z-index: 5;
+  border-radius: 4px;
+}
+.fm-kern-glyph-hit:hover,
+.fm-kern-glyph-hit.active {
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 45%, transparent);
+}
+.fm-kern-ruler {
+  position: absolute;
+  width: 0;
+  border-left: 1px dashed var(--text-faint);
+  pointer-events: none;
+}
+.fm-kern-ruler span {
+  position: absolute;
+  top: -4px;
+  left: 4px;
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text-faint);
+  white-space: nowrap;
+}
+.fm-kern-ruler-live { border-left-color: var(--accent); }
+.fm-kern-ruler-edge { border-left-color: color-mix(in srgb, var(--accent) 55%, var(--text-faint)); }
+.fm-kern-ruler-live span { color: var(--accent); font-weight: 600; }
+
+.fm-kern-precision { max-width: 190px; }
+.fm-kern-value-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.fm-kern-value-row .fm-numeric-control { flex: 1; min-width: 0; }
+/* Minimalist undo/redo for kerning, styled after .fm-theme-toggle's icon
+   button so it reads as part of the existing UI language rather than a
+   new control style. */
+.fm-kern-history-btns {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  flex: 0 0 auto;
+}
+.fm-kern-history-btns button {
+  width: 26px;
+  height: 26px;
+  border-radius: 7px;
+  border: 1px solid var(--line);
+  background: var(--panel-2);
+  color: var(--text-dim);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
+}
+.fm-kern-history-btns button:hover:not(:disabled) {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.fm-kern-history-btns button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+.fm-kern-history-btns button:disabled { opacity: 0.32; cursor: not-allowed; }
+.fm-kern-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.fm-kern-actions .fm-action-btn {
+  width: auto;
+  margin-top: 0;
+  padding: 8px 11px;
+  border-radius: 8px;
+  font-size: 11.5px;
+}
+.fm-kern-actions .fm-action-btn.accent { margin-left: auto; }
+.fm-kern-complete {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--line));
+  border-radius: 8px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: 11.5px;
+}
+.fm-kern-complete .fm-status-dot { background: var(--accent); }
+
+@media (max-width: 900px) {
+  .fm-kern-pair-head { align-items: stretch; flex-direction: column; }
+  .fm-kern-actions .fm-action-btn.accent { margin-left: 0; }
+}
+
+
+/* Unified Test Lab: Kerning lives in the specimen's right rail. */
+.fm-lab-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--text);
+  font-size: 12.5px;
+  font-weight: 700;
+}
+.fm-lab-glyph-row {
+  position: relative;
+  flex: 0 0 auto;
+}
+.fm-lab-side {
+  overflow-y: auto;
+  padding-right: 2px;
+}
+.fm-lab-side-section {
+  padding-bottom: 18px;
+  margin-bottom: 18px;
+  border-bottom: 1px solid var(--line);
+}
+.fm-lab-side-section:last-child {
+  border-bottom: 0;
+  margin-bottom: 0;
+}
+.fm-lab-side-section .fm-section-title {
+  padding: 0 0 10px;
+}
+.fm-kern-context {
+  min-height: 30px;
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+  padding: 7px 9px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: var(--panel-2);
+  color: var(--text-dim);
+  font-family: var(--mono);
+  font-size: 11.5px;
+}
+.fm-kern-side-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 7px;
+  margin-bottom: 10px;
+}
+.fm-kern-side-actions .fm-action-btn {
+  width: 100%;
+  margin-top: 0;
+  padding: 8px 7px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  font-size: 11px;
+}
+.fm-kern-side-actions .fm-action-btn.accent {
+  border-color: color-mix(in srgb, var(--accent) 55%, var(--line));
+  color: var(--accent);
+}
+.fm-kern-glyph-hit.active {
+  background: color-mix(in srgb, var(--accent) 7%, transparent);
+}
+.fm-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+
+/* Targeted Test Lab refinement: one large, quiet workspace with kerning in the right rail. */
+.fm-lab-backdrop {
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.62);
+  backdrop-filter: blur(4px);
+}
+.fm-lab-modal {
+  width: min(1360px, 100%);
+  height: min(900px, calc(100vh - 40px));
+  height: min(900px, calc(100dvh - 40px));
+  border-color: color-mix(in srgb, var(--line) 72%, transparent);
+  border-radius: 16px;
+  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.42);
+}
+.fm-lab-head {
+  padding: 13px 18px;
+  border-bottom-color: color-mix(in srgb, var(--line) 62%, transparent);
+}
+.fm-lab-body {
+  overflow: hidden;
+  padding: 18px 20px 20px;
+}
+.fm-lab-grid {
+  gap: 20px;
+}
+.fm-lab-main {
+  gap: 12px;
+}
+.fm-lab-side {
+  width: 284px;
+  padding: 2px 8px 2px 2px;
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--text-faint) 58%, transparent) transparent;
+}
+.fm-lab-side::-webkit-scrollbar {
+  width: 6px;
+}
+.fm-lab-side::-webkit-scrollbar-track {
+  background: transparent;
+}
+.fm-lab-side::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--text-faint) 54%, transparent);
+  border-radius: 999px;
+}
+.fm-lab-side::-webkit-scrollbar-thumb:hover {
+  background: color-mix(in srgb, var(--text-dim) 72%, transparent);
+}
+.fm-lab-side-section {
+  padding: 2px 2px 20px;
+  margin: 0 0 18px;
+  border-bottom: 0;
+}
+.fm-lab-side-section + .fm-lab-side-section {
+  padding-top: 2px;
+}
+.fm-lab-stage {
+  min-height: 430px;
+  padding: 34px 38px;
+  border-color: color-mix(in srgb, var(--line) 58%, transparent);
+  border-radius: 12px;
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--text-faint) 52%, transparent) transparent;
+}
+.fm-lab-stage::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.fm-lab-stage::-webkit-scrollbar-track {
+  background: transparent;
+}
+.fm-lab-stage::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--text-faint) 48%, transparent);
+  border-radius: 999px;
+}
+.fm-lab-test-row {
+  gap: 2px;
+  padding: 0 2px;
+}
+.fm-lab-test-btn {
+  border: 0;
+  background: transparent;
+  border-radius: 7px;
+  padding: 6px 9px;
+  color: var(--text-faint);
+}
+.fm-lab-test-btn:hover {
+  border-color: transparent;
+  background: color-mix(in srgb, var(--panel-2) 72%, transparent);
+  color: var(--text);
+}
+.fm-lab-test-btn.active {
+  border-color: transparent;
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.fm-kern-context {
+  border: 0;
+  background: color-mix(in srgb, var(--panel-2) 72%, transparent);
+  padding: 8px 10px;
+}
+.fm-kern-side-actions {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.fm-kern-side-actions .fm-action-btn {
+  min-width: 0;
+  height: 34px;
+  min-height: 34px;
+  white-space: nowrap;
+}
+.fm-kern-side-actions .fm-kern-reset-btn:hover:not(:disabled) {
+  color: var(--accent);
+}
+.fm-kern-side-actions .fm-kern-reset-btn:hover:not(:disabled) svg {
+  color: currentColor;
+}
+.fm-kern-side-actions .fm-action-btn.accent {
+  color: var(--accent-ink);
+  background: var(--accent);
+  border-color: var(--accent);
+  font-weight: 750;
+  overflow: visible;
+}
+.fm-kern-side-actions .fm-action-btn.accent:hover {
+  filter: brightness(1.05);
+}
+.fm-kern-side-actions .fm-auto-kern-icon {
+  display: block;
+  flex: 0 0 auto;
+  stroke: currentColor;
+}
+.fm-testlab-nav {
+  color: var(--text);
+}
+.fm-testlab-nav svg {
+  color: var(--accent);
+}
+/* Kerning drag visuals are intentionally transient. Hover only changes the cursor;
+   highlight, border, glyph ink and rulers are rendered only while pointer drag is active. */
+.fm-kern-glyph-hit:hover {
+  box-shadow: none;
+}
+.fm-kern-glyph-hit.active {
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 52%, transparent);
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+}
+.fm-lab-caret {
+  margin-left: 4px;
+}
+@media (max-width: 960px) {
+  .fm-lab-backdrop { padding: 10px; }
+  .fm-lab-modal { height: calc(100vh - 20px); height: calc(100dvh - 20px); }
+  .fm-lab-grid { gap: 14px; }
+  .fm-lab-side { width: 250px; }
+  .fm-lab-stage { padding: 26px; }
+}
+@media (max-width: 820px) {
+  .fm-lab-backdrop { padding: 6px; }
+  .fm-lab-modal { height: calc(100vh - 12px); height: calc(100dvh - 12px); border-radius: 12px; }
+  .fm-lab-body { padding: 12px 14px 14px; }
+  .fm-lab-side { width: 210px; }
+  .fm-lab-stage { padding: 16px; min-height: 260px; }
+  .fm-lab-controls-row .fm-field { min-width: 76px; }
+}
+
+
+/* Type Test remains the first editable Test Lab preset. Font metrics now live on the main canvas. */
+.fm-lab-test-btn[data-testid="lab-test-type"] {
+  margin-right: 4px;
+  color: var(--text-dim);
+}
+.fm-lab-test-btn[data-testid="lab-test-type"].active {
+  color: var(--accent);
+}
+.fm-lab-stage.light .fm-type-guide > span {
+  background: color-mix(in srgb, #fff 88%, transparent);
+}
+
+/* Font-level metrics precision controls. Direct manipulation lives on the main SVG canvas. */
+.fm-font-metrics-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 7px 8px;
+}
+.fm-metric-field {
+  margin: 0;
+}
+.fm-metric-field label {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--text-faint);
+  font-size: 9.5px;
+  letter-spacing: .01em;
+}
+.fm-metric-field input {
+  width: 100%;
+  min-width: 0;
+  font-family: var(--mono);
+  font-variant-numeric: tabular-nums;
+}
+.fm-metric-field input:focus {
+  border-color: color-mix(in srgb, var(--accent) 68%, var(--border));
+  box-shadow: 0 0 0 2px var(--accent-soft);
+  outline: none;
+}
+
+
+/* Production file/project actions â€” intentionally scoped to the existing top chrome. */
+.fm-filemenu-wrap { position: relative; }
+.fm-filemenu-wrap > .fm-topbtn { gap: 5px; }
+.fm-filemenu {
+  position: absolute; top: calc(100% + 8px); left: 0; z-index: 80;
+  width: 210px; max-width: calc(100vw - 20px); padding: 6px; border: 1px solid var(--line);
+  border-radius: 10px; background: color-mix(in srgb, var(--panel) 96%, transparent);
+  box-shadow: 0 18px 46px rgba(0,0,0,.36); backdrop-filter: blur(18px);
+}
+.fm-filemenu button {
+  width: 100%; height: 34px; display: flex; align-items: center; gap: 9px;
+  padding: 0 9px; border: 0; border-radius: 7px; background: transparent;
+  color: var(--text); font: inherit; text-align: left; cursor: pointer;
+}
+.fm-filemenu button:hover:not(:disabled) { background: var(--panel-2); }
+.fm-filemenu button:disabled { opacity: .45; cursor: default; }
+.fm-filemenu button kbd {
+  margin-left: auto; color: var(--text-faint); font-size: 10px; font-family: inherit;
+  background: transparent; border: 0; padding: 0;
+}
+.fm-filemenu-sep { height: 1px; margin: 5px 4px; background: var(--line); }
+
+/* Export shortcut: visible, but still part of the same quiet header language. */
+.fm-export-nav {
+  color: var(--text);
+}
+.fm-export-nav svg {
+  color: var(--accent);
+}
+
+/* Non-blocking notifications replace the old bottom-pinned process/status bar. */
+.fm-toast {
+  position: fixed; top: 68px; right: 18px; z-index: 180;
+  width: min(380px, calc(100vw - 36px));
+  display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 10px;
+  padding: 10px 10px 10px 12px;
+  border: 1px solid var(--line); border-radius: 11px;
+  background: color-mix(in srgb, var(--panel) 96%, transparent);
+  color: var(--text); font-size: 12px; line-height: 1.4;
+  box-shadow: 0 16px 44px rgba(0,0,0,.36);
+  backdrop-filter: blur(16px);
+  animation: fm-toast-in .16s ease-out;
+}
+.fm-toast-success { border-color: color-mix(in srgb, var(--accent) 36%, var(--line)); }
+.fm-toast-success > svg { color: var(--accent); }
+.fm-toast-error { border-color: color-mix(in srgb, var(--danger) 44%, var(--line)); }
+.fm-toast-error > svg { color: var(--danger); }
+.fm-toast-info > svg { color: var(--text-dim); }
+.fm-toast-close {
+  width: 28px; height: 28px; display: grid; place-items: center;
+  border: 0; border-radius: 7px; background: transparent; color: var(--text-dim); cursor: pointer;
+}
+.fm-toast-close:hover { background: var(--panel-2); color: var(--text); }
+
+.fm-export-backdrop {
+  position: fixed; inset: 0; z-index: 150; display: grid; place-items: center;
+  padding: 28px; background: rgba(3,5,8,.72); backdrop-filter: blur(8px);
+}
+.fm-export-dialog {
+  width: min(480px, calc(100vw - 40px));
+  max-height: calc(100vh - 48px);
+  max-height: calc(100dvh - 48px);
+  overflow: auto;
+  border: 1px solid var(--line); border-radius: 16px;
+  background: var(--panel); box-shadow: 0 28px 90px rgba(0,0,0,.46);
+}
+.fm-export-dialog > header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 18px 20px 14px; border-bottom: 1px solid var(--line);
+}
+.fm-export-dialog h2 { margin: 3px 0 0; font-size: 19px; font-weight: 650; letter-spacing: -.02em; }
+
+.fm-export-tabs {
+  display: flex; gap: 4px;
+  margin: 14px 20px 0;
+  padding: 3px;
+  border: 1px solid var(--line); border-radius: 9px;
+  background: var(--panel-2);
+}
+.fm-export-tab {
+  flex: 1; min-width: 0; display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  height: 32px; border: 0; border-radius: 6px;
+  background: transparent; color: var(--text-dim); font: inherit; font-size: 12px; font-weight: 650;
+  cursor: pointer;
+}
+.fm-export-tab:hover { color: var(--text); }
+.fm-export-tab.active { background: var(--accent); color: var(--accent-ink); }
+
+.fm-export-form {
+  display: grid; gap: 14px;
+  padding: 18px 20px 8px;
+}
+.fm-export-options {
+  margin-top: -6px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+}
+.fm-export-field { display: grid; gap: 6px; min-width: 0; }
+.fm-export-field > span {
+  color: var(--text-dim); font-size: 10.5px; font-weight: 650; letter-spacing: .055em; text-transform: uppercase;
+}
+.fm-export-dialog input,
+.fm-export-dialog select {
+  width: 100%; min-width: 0; height: 38px; padding: 0 10px;
+  border: 1px solid var(--line); border-radius: 8px; outline: none;
+  background: var(--panel-2); color: var(--text); font: inherit;
+}
+.fm-export-dialog input:focus,
+.fm-export-dialog select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-soft);
+}
+.fm-export-dialog select { cursor: pointer; }
+
+.fm-export-style-list {
+  display: grid;
+  gap: 2px;
+  padding: 3px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: var(--panel-2);
+}
+
+.fm-export-style-option {
+  position: relative;
+  min-height: 34px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 0 9px;
+  border-radius: 6px;
+  color: var(--text);
+  cursor: pointer;
+  user-select: none;
+}
+
+.fm-export-style-option:hover:not(.disabled) { background: var(--panel); }
+
+.fm-export-style-option > input[type="checkbox"] {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.fm-export-checkmark {
+  width: 15px;
+  height: 15px;
+  flex: 0 0 15px;
+  display: grid;
+  place-items: center;
+  border: 1.5px solid var(--line-strong, var(--line));
+  border-radius: 4px;
+  background: transparent;
+  transition: border-color .12s ease, box-shadow .12s ease;
+}
+
+.fm-export-style-option > input[type="checkbox"]:checked + .fm-export-checkmark {
+  border-color: var(--accent);
+  background: transparent;
+}
+
+.fm-export-style-option > input[type="checkbox"]:checked + .fm-export-checkmark::after {
+  content: "";
+  width: 4px;
+  height: 7.5px;
+  margin-top: -1.5px;
+  border-right: 1.5px solid var(--accent);
+  border-bottom: 1.5px solid var(--accent);
+  transform: rotate(45deg);
+}
+
+.fm-export-style-option > input[type="checkbox"]:focus-visible + .fm-export-checkmark {
+  box-shadow: 0 0 0 2px var(--accent-soft);
+}
+
+.fm-export-style-name {
+  min-width: 0;
+  font-size: 12px;
+  font-weight: 620;
+}
+
+.fm-export-style-status {
+  margin-left: auto;
+  color: var(--text-dim);
+  font-size: 10px;
+  letter-spacing: .02em;
+}
+
+.fm-export-style-option.disabled {
+  opacity: .38;
+  cursor: default;
+}
+
+.fm-export-style-option.fm-export-style-locked {
+  opacity: .55;
+  cursor: pointer;
+}
+.fm-export-style-option.fm-export-style-locked:hover {
+  background: var(--panel);
+}
+.fm-export-style-option.fm-export-style-locked .fm-lock-badge-inline {
+  margin-left: auto;
+}
+
+.fm-format-segment {
+  display: flex; min-height: 38px; padding: 3px;
+  border: 1px solid var(--line); border-radius: 9px; background: var(--panel-2);
+}
+.fm-format-segment button {
+  flex: 1; min-width: 0; border: 0; border-radius: 6px; padding: 0 10px;
+  background: transparent; color: var(--text-dim); font: inherit; font-size: 11px; font-weight: 650; cursor: pointer;
+}
+.fm-format-segment button:hover { color: var(--text); }
+.fm-format-segment button.active { background: var(--accent); color: var(--accent-ink); }
+
+.fm-export-quota-note { padding: 0 20px; margin-top: -6px; }
+
+.fm-export-actions {
+  display: flex; justify-content: flex-end; gap: 9px;
+  padding: 16px 20px 20px;
+}
+.fm-primary-btn,
+.fm-secondary-btn {
+  height: 38px; display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+  padding: 0 14px; border-radius: 8px; font: inherit; font-weight: 700; cursor: pointer;
+}
+.fm-primary-btn { border: 1px solid var(--accent); background: var(--accent); color: var(--accent-ink); }
+.fm-primary-btn:hover:not(:disabled) { background: var(--accent-2); border-color: var(--accent-2); }
+.fm-secondary-btn { border: 1px solid var(--line); background: transparent; color: var(--text-dim); }
+.fm-secondary-btn:hover:not(:disabled) { background: var(--panel-2); color: var(--text); }
+.fm-primary-btn:disabled,
+.fm-secondary-btn:disabled { opacity: .5; cursor: default; }
+
+@keyframes fm-toast-in {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 760px) {
+  .fm-export-backdrop { padding: 16px; }
+  .fm-export-dialog { width: min(480px, calc(100vw - 24px)); }
+  .fm-export-actions { flex-direction: column-reverse; }
+  .fm-primary-btn, .fm-secondary-btn { width: 100%; }
+}
+
+/* Family generation intentionally inherits .fm-action-btn.accent so it tracks
+   the Auto Kerning button treatment while remaining full-width in the glyph rail. */
+.fm-glyphnav .fm-family-generate {
+  width: 100%;
+  min-height: 36px;
+  margin: 0 0 10px;
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--accent) 54%, transparent),
+    0 0 16px color-mix(in srgb, var(--accent) 24%, transparent);
+  transition: background 0.14s ease, filter 0.14s ease, box-shadow 0.14s ease, transform 0.1s ease;
+}
+.fm-glyphnav .fm-family-generate:hover {
+  filter: brightness(1.04);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--accent) 70%, transparent),
+    0 0 20px color-mix(in srgb, var(--accent) 34%, transparent);
+}
+.fm-glyphnav .fm-family-generate:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.fm-glyphnav .fm-family-generate:active { transform: translateY(1px); }
+.fm-glyphnav .fm-family-generate svg { flex: 0 0 auto; }
+
+
+/* ================================================================
+   Kerning Family â€” additive Test Lab extension.
+   Single Test selectors/components above remain untouched.
+   ================================================================ */
+
+.fm-kern-mode-toggle {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 7px;
+  margin: 10px 0 12px;
+}
+.fm-kern-mode-toggle button {
+  min-width: 0;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-dim);
+  font: inherit;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background .14s ease, border-color .14s ease, color .14s ease;
+}
+.fm-kern-mode-toggle button:hover {
+  border-color: var(--text-faint);
+  color: var(--text);
+}
+.fm-kern-mode-toggle button.active {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+.fm-kern-mode-toggle button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.fm-kern-mode-toggle.fm-ghost-mode-toggle {
+  grid-template-columns: 1fr 1fr 1fr;
+}
+.fm-ghost-image-field { margin-top: 12px; }
+.fm-ghost-image-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.fm-ghost-image-preview img {
+  width: 100%;
+  max-height: 120px;
+  object-fit: contain;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--panel-2);
+  padding: 6px;
+}
+.fm-ghost-image-actions {
+  display: flex;
+  gap: 8px;
+}
+.fm-ghost-image-actions .fm-action-btn { margin-top: 0; flex: 1; }
+.fm-ghost-image-error {
+  color: var(--danger);
+  margin-top: 6px;
+}
+
+.fm-kern-layer-field {
+  margin: 0 0 12px;
+}
+.fm-kern-layer-field select {
+  height: 34px;
+  cursor: pointer;
+}
+.fm-kern-layer-note {
+  margin-top: 6px;
+  color: var(--text-faint);
+  font-size: 10px;
+  line-height: 1.45;
+}
+.fm-kern-precision label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.fm-kern-layer-hint {
+  display: inline-flex;
+  align-items: center;
+  min-height: 17px;
+  padding: 1px 5px;
+  border-radius: 999px;
+  font-size: 8.5px;
+  font-family: var(--mono);
+  font-weight: 750;
+  letter-spacing: .02em;
+  text-transform: uppercase;
+}
+.fm-kern-layer-hint.override {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.fm-kern-layer-hint.inherited {
+  background: var(--panel-2);
+  color: var(--text-faint);
+}
+.fm-kern-context-style {
+  color: var(--accent);
+  font-family: var(--sans);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.fm-kern-context:has(.fm-kern-context-style) {
+  justify-content: space-between;
+  gap: 8px;
+}
+.fm-kern-side-actions .fm-action-btn:disabled {
+  opacity: .42;
+  cursor: default;
+  border-color: var(--line);
+}
+.fm-kern-side-actions .fm-action-btn:disabled:hover {
+  filter: none;
+  background: var(--panel-2);
+  color: var(--text-dim);
+}
+
+/* Family preview owns vertical scrolling only. Text is always soft-wrapped
+   using FontSeru glyph metrics before it reaches the right border. */
+.fm-family-stage {
+  padding: 0 !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+}
+.fm-family-preview {
+  width: 100%;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+.fm-family-style-row {
+  display: grid;
+  grid-template-columns: 82px minmax(0, 1fr);
+  min-width: 0;
+  min-height: 154px;
+  border-bottom: 1px solid color-mix(in srgb, var(--line) 78%, transparent);
+}
+.fm-family-style-row:last-child {
+  border-bottom: 0;
+}
+.fm-family-style-row.context-active .fm-family-style-label > span {
+  color: var(--accent);
+}
+.fm-family-style-label {
+  padding: 22px 10px 18px 18px;
+  color: currentColor;
+  opacity: .84;
+}
+.fm-family-style-label > span {
+  display: block;
+  font-size: 11.5px;
+  font-weight: 650;
+}
+.fm-family-style-label small {
+  display: inline-block;
+  margin-top: 7px;
+  color: var(--accent);
+  font-family: var(--mono);
+  font-size: 7.5px;
+  font-weight: 800;
+  letter-spacing: .09em;
+}
+.fm-family-style-body {
+  position: relative;
+  min-width: 0;
+  min-height: 153px;
+  /* Extra top padding (was 28px) gives headroom for multilingual glyphs
+     whose diacritics/marks rise above the font's ascender metric â€” with
+     only 28px there wasn't enough room and tall accents got clipped by
+     the overflow rule below. */
+  padding: 44px 30px 26px 8px;
+  overflow: hidden;
+  cursor: default;
+}
+.fm-family-style-row.editable .fm-family-style-body {
+  cursor: text;
+}
+.fm-family-lines {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  min-width: 0;
+  pointer-events: none;
+}
+.fm-family-preview-line {
+  width: 100%;
+  min-width: 0;
+  display: flex;
+  /* Horizontal overflow (long lines) is still contained by the row's own
+     width via .fm-family-line-inner's max-width below; overflow was
+     previously "hidden" here too, which also clipped vertically and cut
+     off tall multilingual diacritics/marks that rise above the font's
+     ascender. Visible lets those render fully; .fm-family-style-body's
+     own overflow + padding above still contains normal-height text. */
+  overflow: visible;
+}
+.fm-family-line-inner {
+  position: relative;
+  flex: 0 0 auto;
+  min-width: 1px;
+  max-width: 100%;
+}
+.fm-family-line-inner .fm-glyphrun {
+  max-width: 100%;
+}
+.fm-family-stage-input {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  resize: none;
+  border: 0;
+  outline: 0;
+  padding: 0;
+  background: transparent;
+  color: transparent;
+  caret-color: transparent;
+  overflow: hidden;
+  font-family: var(--sans);
+}
+.fm-family-stage-input::selection {
+  background: transparent;
+  color: transparent;
+}
+.fm-family-caret {
+  margin-left: 2px;
+}
+.fm-family-line-inner .fm-kern-active-box.selected {
+  background: color-mix(in srgb, var(--accent) 6%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 62%, transparent);
+}
+.fm-family-line-inner .fm-kern-glyph-hit:hover:not(.active) {
+  background: transparent;
+  box-shadow: none;
+}
+.fm-family-line-inner .fm-kern-ruler {
+  z-index: 6;
+}
+
+@media (max-width: 960px) {
+  .fm-family-style-row {
+    grid-template-columns: 68px minmax(0, 1fr);
+  }
+  .fm-family-style-label {
+    padding-left: 12px;
+  }
+  .fm-family-style-body {
+    padding-right: 20px;
+  }
+}
+
+
+/* ================================================================
+   Family Auto Generate â€” reuses Test Lab window and existing controls.
+   ================================================================ */
+.fm-family-auto-modal {
+  width: min(1220px, 100%);
+  height: min(900px, calc(100vh - 40px));
+  height: min(900px, calc(100dvh - 40px));
+}
+.fm-family-auto-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 18px 20px 20px;
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--text-faint) 52%, transparent) transparent;
+}
+.fm-family-auto-previews {
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--line) 72%, transparent);
+  border-radius: 12px;
+  background: var(--canvas);
+}
+.fm-family-auto-row {
+  display: grid;
+  grid-template-columns: 112px minmax(0, 1fr);
+  min-height: 132px;
+  border-bottom: 1px solid color-mix(in srgb, var(--line) 76%, transparent);
+}
+.fm-family-auto-row:last-child { border-bottom: 0; }
+.fm-family-auto-row-head {
+  display: flex;
+  align-items: flex-start;
+  padding: 18px 12px 14px 16px;
+  background: color-mix(in srgb, var(--panel) 68%, transparent);
+}
+.fm-family-auto-row-head > div {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 6px;
+}
+.fm-family-auto-row-head strong {
+  color: var(--text);
+  font-size: 11.5px;
+  font-weight: 700;
+}
+.fm-family-auto-row-head span {
+  color: var(--text-faint);
+  font-family: var(--mono);
+  font-size: 9px;
+  line-height: 1.4;
+}
+.fm-family-auto-categories {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 3px;
+}
+.fm-family-auto-categories button {
+  width: auto;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--text-faint);
+  font: inherit;
+  font-family: var(--mono);
+  font-size: 9px;
+  line-height: 1.4;
+  text-align: left;
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+.fm-family-auto-categories button:hover,
+.fm-family-auto-categories button.is-active {
+  color: var(--accent);
+}
+.fm-family-auto-categories button:focus-visible {
+  outline: 1px solid var(--accent);
+  outline-offset: 2px;
+}
+.fm-family-auto-strip {
+  display: flex;
+  min-width: 0;
+  gap: 7px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 13px 14px 12px;
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--text-faint) 48%, transparent) transparent;
+}
+.fm-family-auto-strip::-webkit-scrollbar { height: 6px; }
+.fm-family-auto-strip::-webkit-scrollbar-track { background: transparent; }
+.fm-family-auto-strip::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--text-faint) 48%, transparent);
+}
+.fm-family-auto-glyph {
+  position: relative;
+  flex: 0 0 60px;
+  width: 60px;
+  height: 98px;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--line) 78%, transparent);
+  border-radius: 9px;
+  background: color-mix(in srgb, var(--panel-2) 82%, transparent);
+  content-visibility: auto;
+  contain-intrinsic-size: 60px 98px;
+}
+.fm-family-auto-glyph.has-vector {
+  border-color: color-mix(in srgb, var(--line) 62%, var(--text-faint));
+}
+.fm-family-auto-char {
+  position: absolute;
+  top: 6px;
+  left: 7px;
+  z-index: 2;
+  max-width: 46px;
+  overflow: hidden;
+  color: var(--text-faint);
+  font-family: var(--mono);
+  font-size: 8px;
+  line-height: 1;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.fm-family-auto-thumb {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--thumb-ink);
+}
+.fm-family-auto-thumb .fm-thumb-svg {
+  width: 78%;
+  height: 72%;
+  margin-top: 9px;
+}
+.fm-family-auto-empty {
+  color: var(--text-faint);
+  font-family: var(--mono);
+  font-size: 8px;
+  text-transform: uppercase;
+  opacity: .58;
+}
+.fm-family-auto-empty-row {
+  padding: 38px 12px;
+  color: var(--text-faint);
+  font-size: 11px;
+}
+.fm-family-auto-generators {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-top: 14px;
+}
+.fm-family-auto-generator {
+  min-width: 0;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--panel-2);
+}
+.fm-family-auto-generator-title {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  margin-bottom: 14px;
+  color: var(--text);
+}
+.fm-family-auto-generator-title > svg {
+  flex: 0 0 auto;
+  margin-top: 1px;
+  color: var(--accent);
+}
+.fm-family-auto-generator-title > div {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.fm-family-auto-generator-title strong {
+  font-size: 12px;
+  font-weight: 750;
+}
+.fm-family-auto-generator-title span {
+  color: var(--text-faint);
+  font-size: 10px;
+}
+.fm-family-auto-live-preview {
+  position: relative;
+  height: 92px;
+  margin-bottom: 13px;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--line) 74%, transparent);
+  border-radius: 9px;
+  background: var(--canvas);
+  color: var(--thumb-ink);
+}
+.fm-family-auto-live-preview > span {
+  position: absolute;
+  top: 7px;
+  left: 8px;
+  z-index: 2;
+  color: var(--text-faint);
+  font-family: var(--mono);
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: .04em;
+}
+.fm-family-auto-live-preview > div {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.fm-family-auto-live-preview .fm-thumb-svg {
+  width: 72%;
+  height: 72%;
+  margin-top: 8px;
+}
+.fm-family-auto-live-preview em {
+  color: var(--text-faint);
+  font-size: 10px;
+  font-style: normal;
+}
+.fm-family-auto-live-preview--strip > div:not(.fm-family-auto-live-strip) {
+  display: block;
+}
+.fm-family-auto-live-strip {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  gap: 5px;
+  padding: 20px 8px 6px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--text-faint) 48%, transparent) transparent;
+}
+.fm-family-auto-live-strip::-webkit-scrollbar { height: 5px; }
+.fm-family-auto-live-strip::-webkit-scrollbar-track { background: transparent; }
+.fm-family-auto-live-strip::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--text-faint) 48%, transparent);
+}
+.fm-family-auto-live-glyph {
+  flex: 0 0 34px;
+  width: 34px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--thumb-ink);
+}
+.fm-family-auto-live-glyph .fm-thumb-svg {
+  width: 100%;
+  height: 82%;
+}
+.fm-family-auto-live-char {
+  color: var(--text-faint);
+  font-family: var(--mono);
+  font-size: 11px;
+  opacity: .6;
+}
+.fm-family-auto-live-empty {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.fm-family-auto-generator .fm-field { margin-bottom: 12px; }
+.fm-family-auto-replace {
+  margin-top: 4px;
+}
+.fm-family-auto-generator .fm-hint {
+  margin-top: 6px;
+}
+.fm-family-auto-generator .fm-action-btn {
+  margin-top: 14px;
+}
+.fm-family-auto-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 36px;
+  margin-top: 12px;
+  padding: 8px 10px;
+  border: 1px solid color-mix(in srgb, var(--accent) 32%, var(--line));
+  border-radius: 8px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: 11.5px;
+}
+.fm-family-auto-status .fm-status-dot { background: var(--accent); }
+
+@media (max-width: 820px) {
+  .fm-family-auto-row {
+    grid-template-columns: 82px minmax(0, 1fr);
+  }
+  .fm-family-auto-row-head {
+    padding-left: 12px;
+  }
+  .fm-family-auto-generators {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ================================================================
+   Trace Image overlay â€” additive only, reuses .fm-lab-* / .fm-field /
+   .fm-action-btn / .fm-grid / .fm-tile tokens above without modifying
+   any of them.
+
+   Layout: the modal splits 75/25 â€” .fm-trace-left (tracing workspace:
+   settings + per-letter results) / .fm-trace-right (compact glyph target
+   preview list). .fm-trace-left itself further splits into a fixed
+   settings rail (.fm-trace-controls) and a flexible results canvas
+   (.fm-trace-canvas) so the 75% side stays usable at any window size.
+   ================================================================ */
+
+.fm-trace-modal { width: min(1440px, 100%); position: relative; }
+
+.fm-trace-body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  gap: 0;
+  overflow: hidden;
+}
+
+.fm-trace-left {
+  flex: 0 0 75%;
+  max-width: 75%;
+  min-width: 0;
+  border-right: 1px solid var(--line);
+  display: flex;
+  min-height: 0;
+}
+
+.fm-trace-controls {
+  width: 300px;
+  flex: 0 0 auto;
+  border-right: 1px solid var(--line-soft);
+  padding: 16px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.fm-trace-canvas {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding: 14px 18px 18px;
+  overflow: hidden;
+}
+.fm-trace-canvas-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+.fm-trace-canvas-head .fm-panel-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 0;
+}
+.fm-trace-canvas-count {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  color: var(--text-faint);
+  white-space: nowrap;
+}
+.fm-trace-canvas-hint {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 6px 0 12px;
+}
+.fm-trace-canvas-empty {
+  flex: 1;
+  min-height: 160px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  text-align: center;
+  color: var(--text-faint);
+  font-size: 12.5px;
+  border: 1.5px dashed var(--line-soft);
+  border-radius: 12px;
+  padding: 24px;
+  max-width: 420px;
+  margin: auto;
+}
+
+/* Unified trace canvas: one blank "sheet" (.fm-trace-artboard) sized to the
+   traced image's own aspect ratio. Every detected shape is positioned on it
+   with absolute percentages derived straight from its pixel bounds, so the
+   whole traced result reads as one composition â€” not separate per-letter
+   cards â€” while each shape (.fm-trace-artboard-item) stays an independently
+   clickable/draggable button. */
+.fm-trace-artboard-wrap {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: 2px;
+}
+.fm-trace-artboard {
+  position: relative;
+  width: 100%;
+  background: var(--canvas);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--line) 60%, transparent);
+}
+/* Each detected shape is a plain, borderless hit target â€” selection reads
+   entirely through the shape's own fill color (see .fm-trace-artboard-svg
+   path below), never through a background box or outline, so overlapping
+   bounding boxes (common for touching/kerned letters) never stack into
+   visible rectangles on top of each other. The hovered/active shape is
+   simply raised above its siblings so it's never partially covered by a
+   neighboring shape's own (invisible) hit area. */
+.fm-trace-artboard-item {
+  position: absolute;
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: grab;
+  z-index: 1;
+}
+.fm-trace-artboard-item:hover,
+.fm-trace-artboard-item.active { z-index: 2; }
+.fm-trace-artboard-item:active { cursor: grabbing; }
+.fm-trace-artboard-item:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+.fm-trace-artboard-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  overflow: visible;
+}
+.fm-trace-artboard-svg path {
+  fill: var(--thumb-ink);
+  transition: fill 0.12s ease, opacity 0.12s ease;
+}
+.fm-trace-artboard-item:hover .fm-trace-artboard-svg path { fill: var(--accent); opacity: 0.7; }
+.fm-trace-artboard-item.active .fm-trace-artboard-svg path { fill: var(--accent); opacity: 1; }
+
+/* Apply-to-glyph bar: lives next to the canvas (not the left settings rail)
+   and only appears once a shape on the artboard is selected. */
+.fm-trace-apply-bar {
+  flex: 0 0 auto;
+  margin-top: 12px;
+  padding: 10px 12px;
+  border: 1px solid var(--line-soft);
+  border-radius: 10px;
+  background: var(--panel-2);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.fm-trace-apply-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.fm-trace-apply-thumb {
+  flex: 0 0 auto;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  border: 1px solid var(--accent);
+  background: var(--panel);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--thumb-ink);
+  cursor: grab;
+}
+.fm-trace-apply-thumb:active { cursor: grabbing; }
+.fm-trace-apply-hint { margin: 0; }
+/* .fm-action-btn defaults to width:100%, which inside this flex row fights
+   .fm-trace-apply-info for space and squashes/overlaps it (the thumb +
+   hint text end up hidden behind the button). Same override pattern as
+   .fm-kern-actions .fm-action-btn below. */
+.fm-trace-apply-bar .fm-action-btn {
+  width: auto;
+  flex: 0 0 auto;
+  margin-top: 0;
+}
+
+.fm-trace-right {
+  flex: 0 0 25%;
+  max-width: 25%;
+  min-width: 200px;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+.fm-trace-right-head {
+  padding: 14px 14px 10px;
+  border-bottom: 1px solid var(--line-soft);
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.fm-trace-right-hint { margin: 0; }
+.fm-trace-glyphlist { flex: 1; overflow-y: auto; padding: 4px 12px 20px; }
+
+/* Compact target tiles: the right rail is a small reference/apply strip,
+   not a primary editing grid, so tiles run smaller and denser than the
+   main glyph nav's .fm-grid/.fm-tile. */
+.fm-trace-target-grid { grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.fm-trace-target-tile { border-radius: 8px; }
+.fm-trace-target-tile .fm-thumb-svg { width: 72%; height: 72%; }
+.fm-trace-target-tile .fm-thumb-char { font-size: 14px; }
+.fm-trace-target-tile .fm-tile-dot { width: 5px; height: 5px; top: 4px; right: 4px; }
+
+/* Compact single-row Detail toggle (Rendah/Sedang/Tinggi). Deliberately its
+   own class rather than reusing .fm-kern-mode-toggle above: that one is a
+   fixed 2-column grid built for a 2-way toggle, so a 3rd button there wraps
+   onto its own row. This one always lays out in one row, sized down so it
+   stays a minimal, low-profile control. */
+.fm-trace-detail-toggle {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 5px;
+  margin: 8px 0 10px;
+}
+.fm-trace-detail-toggle button {
+  min-width: 0;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: transparent;
+  color: var(--text-dim);
+  font: inherit;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  padding: 0 4px;
+  transition: background .14s ease, border-color .14s ease, color .14s ease;
+}
+.fm-trace-detail-toggle button:hover {
+  border-color: var(--text-faint);
+  color: var(--text);
+}
+.fm-trace-detail-toggle button.active {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+.fm-trace-detail-toggle button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Import SVG: sits above the Import Image dropzone, minimalist dark/outline
+   by default, switching to the app's accent green on hover/active â€” visually
+   distinct from the dashed image dropzone since it skips tracing entirely. */
+.fm-trace-import-svg-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 9px 10px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: var(--panel-2);
+  color: var(--text-dim);
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.14s ease, color 0.14s ease, background 0.14s ease;
+}
+.fm-trace-import-svg-btn:hover,
+.fm-trace-import-svg-btn:focus-visible {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-soft);
+  outline: none;
+}
+.fm-trace-import-svg-btn:active { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+.fm-trace-import-svg-btn:disabled { opacity: 0.6; cursor: default; }
+.fm-trace-svg-file-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.fm-trace-dropzone {
+  position: relative;
+  border: 1.5px dashed var(--line);
+  border-radius: 12px;
+  background: var(--panel-2);
+  min-height: 150px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: var(--text-faint);
+  font-size: 12px;
+  text-align: center;
+  padding: 14px;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
+}
+.fm-trace-dropzone:hover,
+.fm-trace-dropzone:focus-visible {
+  border-color: var(--accent);
+  color: var(--text-dim);
+  outline: none;
+}
+.fm-trace-dropzone.dragging {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.fm-trace-dropzone.has-image {
+  /* Fixed-height frame regardless of the uploaded image's own aspect ratio,
+     so a very tall or very wide source image is always scaled to fit
+     inside the box (object-fit: contain) instead of stretching it. */
+  height: 190px;
+  padding: 8px;
+  cursor: pointer;
+}
+.fm-trace-preview-img {
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  border-radius: 8px;
+  display: block;
+  background: #fff;
+  object-fit: contain;
+}
+.fm-trace-file-input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.fm-trace-filename {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text-dim);
+}
+.fm-trace-filename span:first-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.fm-trace-filename-reset {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex: 0 0 auto;
+  border: none;
+  background: none;
+  color: var(--text-faint);
+  font-size: 11px;
+  cursor: pointer;
+  padding: 2px 4px;
+}
+.fm-trace-filename-reset:hover { color: var(--accent); }
+
+.fm-trace-result-head {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+
+/* Auto-updating "before you press Trace" preview, directly under the
+   upload box in the left rail. */
+.fm-trace-live-preview {
+  margin-top: 4px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line-soft);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.fm-trace-live-preview-box {
+  position: relative;
+  height: 120px;
+  border-radius: 10px;
+  border: 1px solid var(--line-soft);
+  background: var(--canvas);
+  color: var(--thumb-ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+}
+.fm-trace-live-preview-box .fm-hint { text-align: center; color: var(--text-faint); }
+.fm-trace-live-preview-spinner {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  color: var(--text-faint);
+}
+.fm-trace-live-preview-box:has(.fm-trace-preview-lens) { cursor: zoom-in; }
+.fm-trace-preview-lens {
+  position: absolute;
+  width: 190px;
+  height: 190px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid var(--accent);
+  box-shadow: 0 8px 22px var(--shadow);
+  background: var(--canvas);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 5;
+}
+.fm-trace-preview-lens-inner {
+  position: absolute;
+  box-sizing: border-box;
+  padding: 10px;
+  transform-origin: 0 0;
+  color: var(--thumb-ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.fm-trace-tile-applied { animation: fm-trace-applied-flash 1.2s ease; }
+@keyframes fm-trace-applied-flash {
+  0% { box-shadow: 0 0 0 2px var(--accent); }
+  100% { box-shadow: none; }
+}
+
+.fm-spin { animation: fm-spin-rotate 0.9s linear infinite; }
+@keyframes fm-spin-rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@media (max-width: 980px) {
+  .fm-trace-left { flex: 0 0 68%; max-width: 68%; }
+  .fm-trace-right { flex: 0 0 32%; max-width: 32%; }
+  .fm-trace-controls { width: 260px; }
+}
+
+@media (max-width: 820px) {
+  .fm-trace-body { flex-direction: column; overflow-y: auto; }
+  .fm-trace-left {
+    flex: 0 0 auto;
+    max-width: none;
+    flex-direction: column;
+    border-right: none;
+    border-bottom: 1px solid var(--line);
+  }
+  .fm-trace-controls {
+    width: auto;
+    border-right: none;
+    border-bottom: 1px solid var(--line-soft);
+  }
+  .fm-trace-canvas { min-height: 260px; }
+  .fm-trace-right { flex: 0 0 auto; max-width: none; min-width: 0; }
+}
