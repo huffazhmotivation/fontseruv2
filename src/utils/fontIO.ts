@@ -7,6 +7,7 @@ import type { KerningPairs } from "@/types/kerning";
 import { kerningKey, parseKerningKey } from "@/types/kerning";
 import { shortId } from "@/utils/id";
 import { buildTrueTypeFont, type TrueTypeGlyphInput } from "@/utils/trueTypeWriter";
+import { toWoff, toWoff2 } from "fontverter";
 
 export interface ImportedFontProject {
   fontName: string;
@@ -16,7 +17,7 @@ export interface ImportedFontProject {
   kerningPairs: KerningPairs;
 }
 
-export type ExportFontFormat = "otf" | "ttf" | "both";
+export type ExportFontFormat = "otf" | "ttf" | "both" | "woff" | "woff2" | "webfont";
 
 function categoryFor(cp: number): GlyphCategory {
   if (cp >= 0x41 && cp <= 0x5a) return "upper";
@@ -38,8 +39,8 @@ export interface NormalizedFontMetadata extends FontInfo {
 }
 
 export interface GeneratedFontFile {
-  extension: "otf" | "ttf";
-  mimeType: "font/otf" | "font/ttf";
+  extension: "otf" | "ttf" | "woff" | "woff2";
+  mimeType: "font/otf" | "font/ttf" | "font/woff" | "font/woff2";
   buffer: ArrayBuffer;
 }
 
